@@ -1,0 +1,25 @@
+#!/command/execlineb -P
+# Base service that runs first
+# Ensures essential directories and permissions are set
+
+# Create essential directories
+if { mkdir -p /opt/cgit/cache }
+if { mkdir -p /opt/cgit/repositories }
+if { mkdir -p /var/log/nginx }
+if { mkdir -p /run/nginx }
+
+# Set ownership for git repositories
+if { chown -R git:git /opt/cgit/repositories }
+
+# Set ownership for cache (nginx needs write access)
+if { chown -R nginx:nginx /opt/cgit/cache }
+
+# Set ownership for nginx directories
+if { chown -R nginx:nginx /var/log/nginx }
+if { chown -R nginx:nginx /run/nginx }
+
+# Set permissions
+if { chmod 755 /opt/cgit/repositories }
+if { chmod 755 /opt/cgit/cache }
+if { chmod 755 /var/log/nginx }
+if { chmod 755 /run/nginx }

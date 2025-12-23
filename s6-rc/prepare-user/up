@@ -1,0 +1,17 @@
+#!/command/execlineb -P
+# Adjust user and group IDs based on environment variables
+with-contenv
+ifthenelse { test -n ${PUID} }
+{
+    ifthenelse { test -n ${PGID} }
+    {
+        if { /usr/sbin/groupmod -g ${PGID} git }
+        if { /usr/sbin/usermod -u ${PUID} git }
+    }
+    {
+        if { /usr/sbin/usermod -u ${PUID} git }
+    }
+}
+{
+    # PUID not set, do nothing
+}

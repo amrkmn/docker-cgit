@@ -1,0 +1,31 @@
+# SSH server configuration for git operations
+
+# Network
+Port 22
+AddressFamily any
+ListenAddress 0.0.0.0
+ListenAddress ::
+
+# Security: Only public key authentication
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication no
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+
+# Performance (outside Match block)
+UseDNS no
+
+# Git user restrictions
+AllowUsers git
+
+# Git user restrictions
+Match User git
+    AuthorizedKeysFile /opt/cgit/ssh/authorized_keys
+    ForceCommand /opt/cgit/bin/git-shell-wrapper.sh
+    X11Forwarding no
+    AllowTcpForwarding no
+    PermitTTY no
+
+# Logging
+LogLevel INFO

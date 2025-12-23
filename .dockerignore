@@ -1,0 +1,22 @@
+# Git
+.git
+.gitignore
+
+# Docker
+docker-compose.yml
+.dockerignore
+
+# Documentation
+README.md
+LICENSE
+
+# Example files
+*.example
+
+# User-specific files
+cgit_authorized_keys
+
+# Temporary files
+*.tmp
+*.log
+.DS_Store

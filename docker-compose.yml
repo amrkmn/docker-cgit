@@ -1,0 +1,29 @@
+services:
+  cgit:
+    image: ghcr.io/amrkmn/cgit:latest
+    # Uncomment to build locally instead of using prebuilt image
+    # build: .
+    container_name: cgit
+    hostname: cgit
+    ports:
+      - "8081:80"
+      - "2223:22"
+    volumes:
+      - ./data/repositories:/opt/cgit/repositories
+      - ./data/ssh:/opt/cgit/ssh
+    environment:
+      - PUID=1000
+      - PGID=1000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M

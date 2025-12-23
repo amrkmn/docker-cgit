@@ -1,0 +1,61 @@
+# cgit configuration file
+# Documentation: https://git.zx2c4.com/cgit/tree/cgitrc.5.txt
+
+# General settings
+root-title=Git Repository Browser
+root-desc=Personal Git Repositories
+virtual-root=/
+robots=noindex, nofollow
+
+# Enable features
+enable-commit-graph=1
+enable-filter-overrides=1
+enable-index-links=1
+enable-log-filecount=1
+enable-log-linecount=1
+enable-subject-links=1
+enable-blame=1
+enable-follow-links=1
+enable-html-serving=1
+enable-remote-branches=1
+enable-git-config=1
+
+# Statistics
+max-stats=year
+
+# Privacy
+noplainemail=1
+
+# Filters for syntax highlighting and formatting
+source-filter=/opt/cgit/filters/syntax-highlighting.py
+about-filter=/opt/cgit/filters/about-formatting.sh
+commit-filter=/opt/cgit/filters/commit-links.sh
+email-filter=/opt/cgit/filters/email-gravatar.py
+
+# Cache settings
+cache-size=40
+cache-root=/opt/cgit/cache
+cache-dynamic-ttl=10
+cache-repo-ttl=10
+cache-root-ttl=10
+cache-scanrc-ttl=10
+cache-static-ttl=10
+
+# Repository settings
+remove-suffix=1
+enable-git-config=1
+
+# README files (checked in order)
+readme=:README.md
+readme=:README.rst
+readme=:README.txt
+readme=:README.html
+readme=:readme.md
+readme=:readme.rst
+readme=:readme.txt
+
+# Scan for repositories in this directory
+scan-path=/opt/cgit/repositories/
+
+# Optional: Include additional repository list
+# include=/opt/cgit/cgitrepos

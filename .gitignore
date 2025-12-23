@@ -1,0 +1,28 @@
+# Data directory (mounted volumes)
+data
+
+# Docker
+docker-compose.override.yml
+
+# User-specific files
+cgit_authorized_keys
+
+# Temporary files
+*.tmp
+*.log
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Environment files
+.env
+.env.local
