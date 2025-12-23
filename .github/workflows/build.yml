@@ -12,6 +12,10 @@ on:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/cgit
 
@@ -27,7 +31,6 @@ jobs:
         platform:
           - linux/amd64
           - linux/arm64
-          - linux/arm/v7
     steps:
       - name: Checkout
         uses: actions/checkout@v4

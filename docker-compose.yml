@@ -1,16 +1,13 @@
 services:
   cgit:
     image: ghcr.io/amrkmn/cgit:latest
-    # Uncomment to build locally instead of using prebuilt image
-    # build: .
     container_name: cgit
     hostname: cgit
     ports:
       - "8081:80"
       - "2223:22"
     volumes:
-      - ./data/repositories:/opt/cgit/repositories
-      - ./data/ssh:/opt/cgit/ssh
+      - ./data:/opt/cgit
     environment:
       - PUID=1000
       - PGID=1000
