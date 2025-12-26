@@ -31,6 +31,8 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
+      - CGIT_HOST=localhost
+      - CGIT_OWNER=Your Name <email@example.com>
     restart: unless-stopped
 ```
 
@@ -140,6 +142,22 @@ cat ~/.ssh/id_ed25519.pub >> data/ssh/authorized_keys
 
 # Restart container
 docker compose restart
+```
+
+## Environment Variables
+
+- `PUID` - User ID for git user (default: 1000)
+- `PGID` - Group ID for git user (default: 1000)
+- `CGIT_HOST` - Hostname for clone URLs (default: localhost)
+- `CGIT_PORT` - Port for clone URLs (default: 2222)
+- `CGIT_OWNER` - Default owner name for new repositories (default: Unknown)
+
+Example:
+```yaml
+environment:
+  - CGIT_HOST=git.example.com
+  - CGIT_PORT=22
+  - CGIT_OWNER="John Doe <john@example.com>"
 ```
 
 ## Ports

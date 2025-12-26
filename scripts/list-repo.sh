@@ -5,6 +5,8 @@
 set -e
 
 REPO_DIR="${REPO_DIR:-/opt/cgit/repositories}"
+CGIT_HOST="${CGIT_HOST:-localhost}"
+CGIT_PORT="${CGIT_PORT:-2222}"
 
 if [ ! -d "$REPO_DIR" ]; then
     echo "Error: Repository directory does not exist: $REPO_DIR"
@@ -44,6 +46,6 @@ for REPO_PATH in $REPOS; do
     echo "Default branch:  $DEFAULT_BRANCH"
     echo "Branches:        $BRANCHES"
     echo "Last commit:     $LAST_COMMIT"
-    echo "Clone URL:       ssh://git@host:2222/${REPO_NAME}.git"
+    echo "Clone URL:       ssh://git@${CGIT_HOST}:${CGIT_PORT}/${REPO_NAME}.git"
     echo ""
 done

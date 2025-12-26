@@ -8,9 +8,11 @@ set -e
 GIT_URL="$1"
 REPO_NAME="${2:-}"
 REPO_DESC="${3:-Mirrored repository}"
-REPO_OWNER="${4:-}"
+REPO_OWNER="${4:-${CGIT_OWNER:-}}"
 REPO_DIR="${REPO_DIR:-/opt/cgit/repositories}"
 CACHE_DIR="${CACHE_DIR:-/opt/cgit/cache}"
+CGIT_HOST="${CGIT_HOST:-localhost}"
+CGIT_PORT="${CGIT_PORT:-2222}"
 
 function clear_cache() {
     if [ -d "$CACHE_DIR" ]; then
@@ -101,5 +103,5 @@ echo "To update this mirror:"
 echo "  docker compose exec cgit sh -c 'cd /opt/cgit/repositories/${REPO_NAME}.git && git remote update'"
 echo ""
 echo "Or use this repository:"
-echo "  git clone ssh://git@your-host:2222/${REPO_NAME}.git"
+echo "  git clone ssh://git@${CGIT_HOST}:${CGIT_PORT}/${REPO_NAME}.git"
 echo ""

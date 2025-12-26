@@ -139,6 +139,10 @@ RUN chmod 755 /opt/cgit/bin/git-shell-wrapper.sh && \
 # Add helper scripts to PATH
 ENV PATH="/opt/cgit/bin:${PATH}"
 
+# Environment variables for clone URLs and default owner
+ENV CGIT_HOST="localhost"
+ENV CGIT_OWNER="Unknown"
+
 # Copy s6-rc service definitions
 COPY s6-rc/ /etc/s6-overlay/s6-rc.d/
 

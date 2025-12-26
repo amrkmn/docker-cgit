@@ -6,9 +6,11 @@ set -e
 
 REPO_NAME="$1"
 REPO_DESC="${2:-A git repository}"
-REPO_OWNER="${3:-$(git config user.name 2>/dev/null || echo 'Unknown User')} <$(git config user.email 2>/dev/null || echo 'unknown@example.com')>"
+REPO_OWNER="${3:-${CGIT_OWNER:-$(git config user.name 2>/dev/null || echo 'Unknown User')} <$(git config user.email 2>/dev/null || echo 'unknown@example.com')>}"
 REPO_DIR="${REPO_DIR:-/opt/cgit/repositories}"
 CACHE_DIR="${CACHE_DIR:-/opt/cgit/cache}"
+CGIT_HOST="${CGIT_HOST:-localhost}"
+CGIT_PORT="${CGIT_PORT:-2222}"
 
 function clear_cache() {
     if [ -d "$CACHE_DIR" ]; then
@@ -82,9 +84,9 @@ echo "Description:     $REPO_DESC"
 echo "Owner:           $REPO_OWNER"
 echo ""
 echo "To use this repository:"
-echo "  git clone ssh://git@your-host:2222/${REPO_NAME}.git"
+echo "  git clone ssh://git@${CGIT_HOST}:${CGIT_PORT}/${REPO_NAME}.git"
 echo ""
 echo "Or add as remote to existing repository:"
-echo "  git remote add origin ssh://git@your-host:2222/${REPO_NAME}.git"
+echo "  git remote add origin ssh://git@${CGIT_HOST}:${CGIT_PORT}/${REPO_NAME}.git"
 echo "  git push -u origin main"
 echo ""
