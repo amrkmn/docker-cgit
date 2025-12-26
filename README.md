@@ -5,43 +5,78 @@ A lightweight Docker image for [cgit](https://git.zx2c4.com/cgit/), a fast web f
 ## Features
 
 - Web interface for browsing repositories
-- SSH support for git push/pull (port 2223)
+- SSH support for git push/pull (port 2222)
 - HTTP clone support (read-only)
 - Syntax highlighting and README rendering
 - Multi-arch support (amd64/arm64)
 
 ## Quick Start
 
-```bash
-# Pull the image
-docker compose pull
+Create `docker-compose.yml`:
 
-# Start the container
+```yaml
+services:
+  cgit:
+    image: ghcr.io/amrkmn/cgit:latest
+    container_name: cgit
+    hostname: cgit
+    ports:
+      - "8081:80"
+      - "2222:22"
+    volumes:
+      - ./data/repositories:/opt/cgit/repositories
+      - ./data/ssh:/opt/cgit/ssh
+      - ./data/cache:/opt/cgit/cache
+    environment:
+      - PUID=1000
+      - PGID=1000
+    restart: unless-stopped
+```
+
+```bash
+# Start container
 docker compose up -d
 
 # Access cgit web interface
 open http://localhost:8081
 ```
 
+## Changing Ports
+
+You can change the SSH port mapping in `docker-compose.yml`:
+
+```yaml
+services:
+  cgit:
+    ports:
+      - "8081:80"      # Web interface (host:container)
+      - "22:22"        # SSH on standard port (requires root/sudo)
+      # - "2223:22"    # Or use any other port
+```
+
+**Note**: Mapping to port 22 requires root/sudo privileges.
+
 ## Creating Repositories
 
 ```bash
-# Using the helper script
-./scripts/init-bare-repo.sh my-project "My Project Description"
+# Simple method (quick)
+docker compose exec cgit sh -c "cd /opt/cgit/repositories && git init --bare my-project.git && cd my-project.git && git config cgit.name 'my-project' && git config cgit.desc 'My Project Description' && git config cgit.defbranch 'main' && chown -R git:git ."
 
-# Or manually
-mkdir -p data/repositories
-cd data/repositories
-git init --bare my-project.git
-cd my-project.git
-git config cgit.name "My Project"
-git config cgit.desc "My Project Description"
+# Or use helper script with description and owner
+docker compose exec cgit /opt/cgit/bin/init-bare-repo.sh my-project "My Project Description" "Your Name <email@example.com>"
 ```
 
 ## Git Operations
 
 ### Clone via SSH (read-write)
 ```bash
+# Default setup
+git clone ssh://git@localhost:2222/my-project.git
+
+# If using port 22
+git clone git@localhost:my-project.git
+
+# If using port 2223
 git clone ssh://git@localhost:2223/my-project.git
 ```
 
@@ -72,11 +107,13 @@ docker compose restart
 ## Ports
 
 - **8081** - Web interface (cgit)
-- **2223** - SSH server (git operations)
+- **2222** - SSH server (git operations)
 
 ## Volumes
 
-- `./data` - Contains repositories, cache, and SSH keys
+- `./data/repositories` - Git repositories
+- `./data/ssh` - SSH authorized_keys
+- `./data/cache` - cgit cache
 
 ## License
 

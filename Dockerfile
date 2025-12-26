@@ -120,9 +120,11 @@ COPY config/cgitrc /opt/cgit/cgitrc
 COPY config/sshd_config /etc/ssh/sshd_config
 COPY config/nginx/default.conf /etc/nginx/http.d/default.conf
 
-# Copy git shell wrapper script
+# Copy git shell wrapper script and init repo helper
 COPY scripts/git-shell-wrapper.sh /opt/cgit/bin/git-shell-wrapper.sh
-RUN chmod 755 /opt/cgit/bin/git-shell-wrapper.sh
+COPY scripts/init-bare-repo.sh /opt/cgit/bin/init-bare-repo.sh
+RUN chmod 755 /opt/cgit/bin/git-shell-wrapper.sh && \
+    chmod 755 /opt/cgit/bin/init-bare-repo.sh
 
 # Copy s6-rc service definitions
 COPY s6-rc/ /etc/s6-overlay/s6-rc.d/
