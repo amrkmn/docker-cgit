@@ -57,6 +57,8 @@ RUN apk add --no-cache \
     spawn-fcgi \
     # SSH server
     openssh-server \
+    # Bash for helper scripts
+    bash \
     # User management for PUID/PGID
     shadow \
     # Python for syntax highlighting
