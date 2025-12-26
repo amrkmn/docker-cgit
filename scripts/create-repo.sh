@@ -1,6 +1,6 @@
 #!/bin/bash
 # Helper script to initialize a new bare git repository for cgit
-# Usage: ./init-bare-repo.sh <repo-name> [description] [owner]
+# Usage: ./create-repo.sh <repo-name> [description] [owner]
 
 set -e
 

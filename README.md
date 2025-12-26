@@ -66,7 +66,7 @@ services:
 docker compose exec cgit sh -c "cd /opt/cgit/repositories && git init --bare my-project.git && cd my-project.git && git config cgit.name 'my-project' && git config cgit.desc 'My Project Description' && git config cgit.defbranch 'main' && chown -R git:git ."
 
 # Or use helper script (no need for full path, scripts are in PATH)
-docker compose exec cgit init-bare-repo.sh my-project "My Project Description" "Your Name <email@example.com>"
+docker compose exec cgit create-repo.sh my-project "My Project Description" "Your Name <email@example.com>"
 ```
 
 ### Clone/Mirror from External Service

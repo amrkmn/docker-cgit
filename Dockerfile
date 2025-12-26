@@ -124,10 +124,10 @@ COPY config/nginx/default.conf /etc/nginx/http.d/default.conf
 
 # Copy git shell wrapper script and helper scripts
 COPY scripts/git-shell-wrapper.sh /opt/cgit/bin/git-shell-wrapper.sh
-COPY scripts/init-bare-repo.sh /opt/cgit/bin/init-bare-repo.sh
+COPY scripts/create-repo.sh /opt/cgit/bin/create-repo.sh
 COPY scripts/clone-repo.sh /opt/cgit/bin/clone-repo.sh
 RUN chmod 755 /opt/cgit/bin/git-shell-wrapper.sh && \
-    chmod 755 /opt/cgit/bin/init-bare-repo.sh && \
+    chmod 755 /opt/cgit/bin/create-repo.sh && \
     chmod 755 /opt/cgit/bin/clone-repo.sh
 
 # Add helper scripts to PATH
