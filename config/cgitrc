@@ -38,7 +38,7 @@ cache-root=/opt/cgit/cache
 cache-dynamic-ttl=10
 cache-repo-ttl=10
 cache-root-ttl=10
-cache-scanrc-ttl=10
+cache-scanrc-ttl=0
 cache-static-ttl=10
 
 # Repository settings

@@ -8,6 +8,15 @@ REPO_NAME="$1"
 REPO_DESC="${2:-A git repository}"
 REPO_OWNER="${3:-$(git config user.name 2>/dev/null || echo 'Unknown User')} <$(git config user.email 2>/dev/null || echo 'unknown@example.com')>"
 REPO_DIR="${REPO_DIR:-/opt/cgit/repositories}"
+CACHE_DIR="${CACHE_DIR:-/opt/cgit/cache}"
+
+function clear_cache() {
+    if [ -d "$CACHE_DIR" ]; then
+        echo "Clearing cgit cache..."
+        rm -rf "${CACHE_DIR:?}"/*
+        echo "Cache cleared."
+    fi
+}
 
 if [ -z "$REPO_NAME" ]; then
     echo "Usage: $0 <repo-name> [description] [owner]"
@@ -60,6 +69,9 @@ git config --local cgit.readme "README.md"
 
 # Optional: set a section/category
 # git config --local cgit.section "Personal Projects"
+
+# Clear cache so repository appears immediately
+clear_cache
 
 echo ""
 echo "Repository created successfully!"

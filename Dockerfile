@@ -126,9 +126,15 @@ COPY config/nginx/default.conf /etc/nginx/http.d/default.conf
 COPY scripts/git-shell-wrapper.sh /opt/cgit/bin/git-shell-wrapper.sh
 COPY scripts/create-repo.sh /opt/cgit/bin/create-repo.sh
 COPY scripts/clone-repo.sh /opt/cgit/bin/clone-repo.sh
+COPY scripts/delete-repo.sh /opt/cgit/bin/delete-repo.sh
+COPY scripts/list-repo.sh /opt/cgit/bin/list-repo.sh
+COPY scripts/clear-cache.sh /opt/cgit/bin/clear-cache.sh
 RUN chmod 755 /opt/cgit/bin/git-shell-wrapper.sh && \
     chmod 755 /opt/cgit/bin/create-repo.sh && \
-    chmod 755 /opt/cgit/bin/clone-repo.sh
+    chmod 755 /opt/cgit/bin/clone-repo.sh && \
+    chmod 755 /opt/cgit/bin/delete-repo.sh && \
+    chmod 755 /opt/cgit/bin/list-repo.sh && \
+    chmod 755 /opt/cgit/bin/clear-cache.sh
 
 # Add helper scripts to PATH
 ENV PATH="/opt/cgit/bin:${PATH}"

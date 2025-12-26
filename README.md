@@ -92,6 +92,18 @@ Update a mirrored repository:
 docker compose exec cgit sh -c "cd /opt/cgit/repositories/my-repo.git && git remote update"
 ```
 
+Delete a repository:
+```bash
+docker compose exec cgit delete-repo.sh my-repo
+```
+
+List all repositories:
+```bash
+docker compose exec cgit list-repo.sh
+```
+
+> **Note**: Repository changes (create, delete, clone) automatically clear the cgit cache, so new repositories appear immediately without restarting the container.
+
 ## Git Operations
 
 ### Clone via SSH (read-write)

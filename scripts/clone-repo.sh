@@ -10,6 +10,15 @@ REPO_NAME="${2:-}"
 REPO_DESC="${3:-Mirrored repository}"
 REPO_OWNER="${4:-}"
 REPO_DIR="${REPO_DIR:-/opt/cgit/repositories}"
+CACHE_DIR="${CACHE_DIR:-/opt/cgit/cache}"
+
+function clear_cache() {
+    if [ -d "$CACHE_DIR" ]; then
+        echo "Clearing cgit cache..."
+        rm -rf "${CACHE_DIR:?}"/*
+        echo "Cache cleared."
+    fi
+}
 
 if [ -z "$GIT_URL" ]; then
     echo "Usage: $0 <git-url> [repo-name] [description] [owner]"
@@ -72,6 +81,9 @@ git config --local cgit.readme "README.md"
 
 # Add clone URL metadata
 git config --local cgit.clone-url "$GIT_URL"
+
+# Clear cache so repository appears immediately
+clear_cache
 
 echo ""
 echo "Repository mirrored successfully!"
