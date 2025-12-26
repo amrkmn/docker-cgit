@@ -7,6 +7,7 @@ A lightweight Docker image for [cgit](https://git.zx2c4.com/cgit/), a fast web f
 - Web interface for browsing repositories
 - SSH support for git push/pull (port 2222)
 - HTTP clone support (read-only)
+- Mirror repositories from GitHub, GitLab, Codeberg, or any git service
 - Syntax highlighting and README rendering
 - Multi-arch support (amd64/arm64)
 
@@ -58,12 +59,37 @@ services:
 
 ## Creating Repositories
 
+### Create Empty Repository
+
 ```bash
 # Simple method (quick)
 docker compose exec cgit sh -c "cd /opt/cgit/repositories && git init --bare my-project.git && cd my-project.git && git config cgit.name 'my-project' && git config cgit.desc 'My Project Description' && git config cgit.defbranch 'main' && chown -R git:git ."
 
 # Or use helper script with description and owner
 docker compose exec cgit /opt/cgit/bin/init-bare-repo.sh my-project "My Project Description" "Your Name <email@example.com>"
+```
+
+### Clone/Mirror from External Service
+
+Clone from GitHub, GitLab, Codeberg, or any git service:
+
+```bash
+# Clone from GitHub
+docker compose exec cgit /opt/cgit/bin/clone-repo.sh https://github.com/username/repo.git
+
+# Clone from GitLab
+docker compose exec cgit /opt/cgit/bin/clone-repo.sh https://gitlab.com/username/repo.git
+
+# Clone from Codeberg
+docker compose exec cgit /opt/cgit/bin/clone-repo.sh https://codeberg.org/username/repo.git
+
+# With custom name and description
+docker compose exec cgit /opt/cgit/bin/clone-repo.sh https://github.com/username/repo.git my-repo "My Mirror" "Owner Name <email>"
+```
+
+Update a mirrored repository:
+```bash
+docker compose exec cgit sh -c "cd /opt/cgit/repositories/my-repo.git && git remote update"
 ```
 
 ## Git Operations
