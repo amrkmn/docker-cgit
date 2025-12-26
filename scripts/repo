@@ -1,0 +1,73 @@
+#!/bin/bash
+# Repository management helper script for cgit
+# Usage: repo <command> [args...]
+#
+# Commands:
+#   create <name> [description] [owner]   - Create a new bare repository
+#   clone <url> [name] [description] [owner] - Clone/mirror a repository
+#   delete <name>                          - Delete a repository
+#   list                                  - List all repositories
+#   clear-cache                           - Clear cgit cache
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+function show_help() {
+    echo "cgit Repository Management"
+    echo ""
+    echo "Usage: repo <command> [args...]"
+    echo ""
+    echo "Commands:"
+    echo "  create <name> [description] [owner]       Create a new bare repository"
+    echo "  clone <url> [name] [description] [owner] Clone/mirror a repository"
+    echo "  delete <name>                             Delete a repository"
+    echo "  list                                      List all repositories"
+    echo "  clear-cache                               Clear cgit cache"
+    echo ""
+    echo "Examples:"
+    echo "  repo create my-project"
+    echo "  repo clone https://github.com/user/repo.git"
+    echo "  repo delete my-project"
+    echo "  repo list"
+    echo ""
+}
+
+function main() {
+    if [ $# -eq 0 ]; then
+        show_help
+        exit 1
+    fi
+
+    local command="$1"
+    shift
+
+    case "$command" in
+        create)
+            "$SCRIPT_DIR/create-repo.sh" "$@"
+            ;;
+        clone)
+            "$SCRIPT_DIR/clone-repo.sh" "$@"
+            ;;
+        delete)
+            "$SCRIPT_DIR/delete-repo.sh" "$@"
+            ;;
+        list)
+            "$SCRIPT_DIR/list-repo.sh" "$@"
+            ;;
+        clear-cache)
+            "$SCRIPT_DIR/clear-cache.sh" "$@"
+            ;;
+        help|--help|-h)
+            show_help
+            ;;
+        *)
+            echo "Error: Unknown command '$command'"
+            echo ""
+            show_help
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"

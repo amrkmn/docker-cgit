@@ -59,52 +59,41 @@ services:
 
 **Note**: Mapping to port 22 requires root/sudo privileges.
 
+## Managing Repositories
+
+All repository operations can be done using the unified `repo` command:
+
+```bash
+# Create a new repository
+docker compose exec cgit repo create my-project "My Description" "Owner <email>"
+
+# Clone/mirror a repository
+docker compose exec cgit repo clone https://github.com/user/repo.git
+
+# List all repositories
+docker compose exec cgit repo list
+
+# Delete a repository
+docker compose exec cgit repo delete my-project
+
+# Clear cgit cache manually
+docker compose exec cgit repo clear-cache
+
+# Show help
+docker compose exec cgit repo help
+```
+
+> **Note**: The old individual scripts (`create-repo.sh`, `clone-repo.sh`, etc.) are still available for backward compatibility.
+> **Note**: Repository changes (create, delete, clone) automatically clear the cgit cache, so new repositories appear immediately without restarting the container.
+
 ## Creating Repositories
 
-### Create Empty Repository
-
-```bash
-# Simple method (quick)
-docker compose exec cgit sh -c "cd /opt/cgit/repositories && git init --bare my-project.git && cd my-project.git && git config cgit.name 'my-project' && git config cgit.desc 'My Project Description' && git config cgit.defbranch 'main' && chown -R git:git ."
-
-# Or use helper script (no need for full path, scripts are in PATH)
-docker compose exec cgit create-repo.sh my-project "My Project Description" "Your Name <email@example.com>"
-```
-
-### Clone/Mirror from External Service
-
-Clone from GitHub, GitLab, Codeberg, or any git service:
-
-```bash
-# Clone from GitHub
-docker compose exec cgit clone-repo.sh https://github.com/username/repo.git
-
-# Clone from GitLab
-docker compose exec cgit clone-repo.sh https://gitlab.com/username/repo.git
-
-# Clone from Codeberg
-docker compose exec cgit clone-repo.sh https://codeberg.org/username/repo.git
-
-# With custom name and description
-docker compose exec cgit clone-repo.sh https://github.com/username/repo.git my-repo "My Mirror" "Owner Name <email>"
-```
+Use the `repo` command to manage repositories (see "Managing Repositories" section above).
 
 Update a mirrored repository:
 ```bash
 docker compose exec cgit sh -c "cd /opt/cgit/repositories/my-repo.git && git remote update"
 ```
-
-Delete a repository:
-```bash
-docker compose exec cgit delete-repo.sh my-repo
-```
-
-List all repositories:
-```bash
-docker compose exec cgit list-repo.sh
-```
-
-> **Note**: Repository changes (create, delete, clone) automatically clear the cgit cache, so new repositories appear immediately without restarting the container.
 
 ## Git Operations
 
