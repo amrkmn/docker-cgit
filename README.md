@@ -65,8 +65,8 @@ services:
 # Simple method (quick)
 docker compose exec cgit sh -c "cd /opt/cgit/repositories && git init --bare my-project.git && cd my-project.git && git config cgit.name 'my-project' && git config cgit.desc 'My Project Description' && git config cgit.defbranch 'main' && chown -R git:git ."
 
-# Or use helper script with description and owner
-docker compose exec cgit /opt/cgit/bin/init-bare-repo.sh my-project "My Project Description" "Your Name <email@example.com>"
+# Or use helper script (no need for full path, scripts are in PATH)
+docker compose exec cgit init-bare-repo.sh my-project "My Project Description" "Your Name <email@example.com>"
 ```
 
 ### Clone/Mirror from External Service
@@ -75,16 +75,16 @@ Clone from GitHub, GitLab, Codeberg, or any git service:
 
 ```bash
 # Clone from GitHub
-docker compose exec cgit /opt/cgit/bin/clone-repo.sh https://github.com/username/repo.git
+docker compose exec cgit clone-repo.sh https://github.com/username/repo.git
 
 # Clone from GitLab
-docker compose exec cgit /opt/cgit/bin/clone-repo.sh https://gitlab.com/username/repo.git
+docker compose exec cgit clone-repo.sh https://gitlab.com/username/repo.git
 
 # Clone from Codeberg
-docker compose exec cgit /opt/cgit/bin/clone-repo.sh https://codeberg.org/username/repo.git
+docker compose exec cgit clone-repo.sh https://codeberg.org/username/repo.git
 
 # With custom name and description
-docker compose exec cgit /opt/cgit/bin/clone-repo.sh https://github.com/username/repo.git my-repo "My Mirror" "Owner Name <email>"
+docker compose exec cgit clone-repo.sh https://github.com/username/repo.git my-repo "My Mirror" "Owner Name <email>"
 ```
 
 Update a mirrored repository:

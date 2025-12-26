@@ -128,6 +128,9 @@ RUN chmod 755 /opt/cgit/bin/git-shell-wrapper.sh && \
     chmod 755 /opt/cgit/bin/init-bare-repo.sh && \
     chmod 755 /opt/cgit/bin/clone-repo.sh
 
+# Add helper scripts to PATH
+ENV PATH="/opt/cgit/bin:${PATH}"
+
 # Copy s6-rc service definitions
 COPY s6-rc/ /etc/s6-overlay/s6-rc.d/
 
