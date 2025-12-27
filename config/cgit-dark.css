@@ -322,7 +322,79 @@ div#cgit table.blob td.linenumbers {
 
 div#cgit table.blob pre {
 	padding: 0; margin: 0;
+	background-color: #1e1e2e;
+	white-space: pre;
+	font-family: monospace;
 }
+
+/* 
+ * Chroma syntax highlighting styles
+ * Matches Chroma output with --html-prefix=pyg
+ * Uses Catppuccin Mocha color palette
+ */
+
+/* Keywords */
+.pygk { color: #cba6f7; }						/* keyword */
+.pygkd { color: #cba6f7; }						/* keyword.declaration */
+.pygkn { color: #cba6f7; }						/* keyword.namespace */
+.pygkp { color: #cba6f7; }						/* keyword.pseudo */
+.pygkr { color: #f5e0dc; }						/* keyword.reserved */
+.pygkt { color: #89b4fa; }						/* keyword.type */
+
+/* Names */
+.pygna { color: #f9e2af; }						/* name.attribute */
+.pygnc { color: #f9e2af; }						/* name.class */
+.pygno { color: #fab387; }						/* name.constant */
+.pygnd { color: #f9e2af; }						/* name.decorator */
+.pygne { color: #f38ba8; }						/* name.exception */
+.pygnf { color: #f9e2af; }						/* name.function */
+.pygnx { color: #f9e2af; }						/* name.other */
+.pygnt { color: #f5e0dc; }						/* name.tag */
+
+/* Literals */
+.pygl { color: #f9e2af; }						/* literal */
+.pygld { color: #fab387; }						/* literal.date */
+.pygs { color: #a6e3a1; }						/* literal.string */
+.pygsa { color: #a6e3a1; }						/* literal.string.affix */
+.pygsb { color: #a6e3a1; }						/* literal.string.backtick */
+.pygsc { color: #a6e3a1; }						/* literal.string.char */
+.pygsd { color: #a6e3a1; }						/* literal.string.delimiter */
+.pygs2 { color: #a6e3a1; }						/* literal.string.double */
+.pygse { color: #fab387; }						/* literal.string.escape */
+.pygsh { color: #a6e3a1; }						/* literal.string.heredoc */
+.pygsi { color: #a6e3a1; }						/* literal.string.interpol */
+.pygsx { color: #a6e3a1; }						/* literal.string.other */
+.pygsr { color: #a6e3a1; }						/* literal.string.regex */
+.pygs1 { color: #a6e3a1; }						/* literal.string.single */
+.pygss { color: #a6e3a1; }						/* literal.string.symbol */
+.pygm { color: #fab387; }						/* literal.number */
+.pygmb { color: #fab387; }						/* literal.number.bin */
+.pygmf { color: #fab387; }						/* literal.number.float */
+.pygmh { color: #fab387; }						/* literal.number.hex */
+.pygmi { color: #fab387; }						/* literal.number.integer */
+.pygil { color: #fab387; }						/* literal.number.integer.long */
+.pygmo { color: #fab387; }						/* literal.number.oct */
+
+/* Operators */
+.pygo { color: #89dceb; }						/* operator */
+.pygow { color: #89dceb; }						/* operator.word */
+
+/* Comments */
+.pygc { color: #6c7080; font-style: italic; }			/* comment */
+.pygch { color: #6c7080; font-style: italic; }			/* comment.hashbang */
+.pygcm { color: #6c7080; font-style: italic; }			/* comment.multiline */
+.pygc1 { color: #6c7080; font-style: italic; }			/* comment.single */
+.pygcs { color: #6c7080; font-style: italic; }			/* comment.special */
+.pygcp { color: #6c7080; font-style: italic; }			/* comment.preproc */
+.pygcpf { color: #6c7080; font-style: italic; }			/* comment.preproc.file */
+
+/* Generic */
+.pyggd { color: #f38ba8; }						/* generic.deleted */
+.pygge { font-style: italic; }					/* generic.emph */
+.pyggi { color: #a6e3a1; }						/* generic.inserted */
+.pyggs { font-weight: bold; }					/* generic.strong */
+.pyggu { color: #6c7080; font-style: italic; }			/* generic.subheading */
+
 
 div#cgit table.blob td.linenumbers a,
 div#cgit table.ssdiff td.lineno a {
