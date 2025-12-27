@@ -16,19 +16,23 @@ A lightweight Docker image for [cgit](https://git.zx2c4.com/cgit/), a fast web f
 
 ## Quick Start
 
-### 1. Initial Setup
+### ⚡ Super Quick (3 commands)
 
-Run the setup script to create necessary directories and configuration files:
+See [SUPERQUICK.md](SUPERQUICK.md) for 3 commands to get started:
 
 ```bash
-./setup.sh
+wget https://raw.githubusercontent.com/amrkmn/docker-cgit/main/docker-compose.yml
+docker run --rm -v $(pwd)/data:/data ghcr.io/amrkmn/cgit:latest sh -c "cp /opt/cgit/cgitrc /data/"
+docker compose up -d
 ```
 
-This creates:
-- `data/repositories/` - Git repositories directory
-- `data/ssh/` - SSH keys directory
-- `data/cache/` - cgit cache directory
-- `data/cgitrc` - cgit configuration (copied from `config/cgitrc`)
+### 📖 Detailed Setup
+
+See [QUICKSTART.md](QUICKSTART.md) for detailed setup instructions.
+
+### Initial Setup (for development or cloning)
+
+If you cloned this repo, run setup script to create necessary directories and configuration files:
 
 ### 2. Edit Configuration (Optional)
 
