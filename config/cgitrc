@@ -20,6 +20,7 @@ enable-follow-links=1
 enable-html-serving=1
 enable-remote-branches=1
 enable-git-config=1
+enable-snapshot=1
 
 # Statistics
 max-stats=year
@@ -45,6 +46,9 @@ cache-static-ttl=10
 # Repository settings
 remove-suffix=1
 enable-git-config=1
+
+# Snapshot formats (tar.gz, tar.bz2, tar.xz, zip)
+snapshots=tar.gz tar.bz2 tar.xz zip
 
 # README files (checked in order)
 readme=:README.md
