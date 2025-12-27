@@ -61,10 +61,9 @@ RUN apk add --no-cache \
     bash \
     # User management for PUID/PGID
     shadow \
-    # Python for syntax highlighting
+    # Python for README rendering
     python3 \
     py3-pip \
-    py3-pygments \
     py3-markdown \
     # Lua support
     luajit \
@@ -72,11 +71,19 @@ RUN apk add --no-cache \
     # Utilities
     mailcap \
     groff \
-    xz
+    xz \
+    # For downloading Chroma
+    curl
 
 # Install rst2html via pip
 RUN python3 -m pip install --no-cache-dir --break-system-packages docutils && \
     ln -sf python3 /usr/bin/python
+
+# Download and install Chroma syntax highlighter (supports Svelte, Astro, SolidJS, etc.)
+RUN CHROMA_VERSION=2.14.0 && \
+    curl -fsSL "https://github.com/alecthomas/chroma/releases/download/v${CHROMA_VERSION}/chroma-${CHROMA_VERSION}-linux-amd64.tar.gz" | \
+    tar -xz -C /usr/local/bin && \
+    chmod +x /usr/local/bin/chroma
 
 # Download and install s6-overlay
 ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp/
@@ -120,7 +127,7 @@ RUN rm -f /etc/nginx/http.d/default.conf
 # Copy configuration files
 COPY config/cgitrc /opt/cgit/cgitrc
 COPY config/cgit-dark.css /opt/cgit/app/cgit-dark.css
-COPY config/syntax-highlighting-dark.py /opt/cgit/filters/syntax-highlighting-dark.py
+COPY config/chroma-highlight.sh /opt/cgit/filters/chroma-highlight.sh
 COPY config/sshd_config /etc/ssh/sshd_config
 COPY config/nginx/default.conf /etc/nginx/http.d/default.conf
 

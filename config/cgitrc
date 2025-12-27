@@ -28,7 +28,7 @@ max-stats=year
 noplainemail=1
 
 # Filters for syntax highlighting and formatting
-source-filter=/opt/cgit/filters/syntax-highlighting-dark.py
+source-filter=/opt/cgit/filters/chroma-highlight.sh
 about-filter=/opt/cgit/filters/about-formatting.sh
 commit-filter=/opt/cgit/filters/commit-links.sh
 email-filter=/opt/cgit/filters/email-gravatar.py
