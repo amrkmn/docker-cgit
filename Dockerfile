@@ -103,8 +103,9 @@ RUN chmod +x /entrypoint.sh
 
 # Create git user and group (UID/GID 1000)
 RUN addgroup -g 1000 git && \
-    adduser -D -h /opt/cgit/data/repositories -u 1000 -G git -s /bin/sh git && \
-    mkdir -p /opt/cgit/data/ssh && \
+    adduser -D -h /opt/cgit/data/repositories -u 1000 -G git -s /bin/sh git
+
+RUN mkdir -p /opt/cgit/data/ssh && \
     touch /opt/cgit/data/ssh/authorized_keys && \
     chmod 700 /opt/cgit/data/ssh && \
     chmod 600 /opt/cgit/data/ssh/authorized_keys && \
@@ -116,8 +117,9 @@ RUN addgroup -g 1000 git && \
 RUN addgroup nginx git
 
 # Create directory structure
-RUN mkdir -p /opt/cgit/data/repositories /opt/cgit/data/cache /opt/cgit/data/ssh /opt/cgit/bin && \
-    chown -R git:git /opt/cgit/data/repositories /opt/cgit/data/ssh && \
+RUN mkdir -p /opt/cgit/data/repositories /opt/cgit/data/cache /opt/cgit/data/ssh /opt/cgit/bin
+
+RUN chown -R git:git /opt/cgit/data/repositories /opt/cgit/data/ssh && \
     chown -R nginx:nginx /opt/cgit/data/cache && \
     chmod 755 /opt/cgit/data/repositories /opt/cgit/data/cache /opt/cgit/data/ssh
 
