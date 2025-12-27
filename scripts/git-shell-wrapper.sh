@@ -1,9 +1,9 @@
 #!/bin/sh
-# Wrapper script that rewrites git paths to /opt/cgit/repositories
+# Wrapper script that rewrites git paths to /opt/cgit/data/repositories
 # Allows: git clone ssh://git@host:port/repo.git
-# Instead of: git clone ssh://git@host:port/opt/cgit/repositories/repo.git
+# Instead of: git clone ssh://git@host:port/opt/cgit/data/repositories/repo.git
 
-REPO_BASE="/opt/cgit/repositories"
+REPO_BASE="/opt/cgit/data/repositories"
 
 if [ -z "$SSH_ORIGINAL_COMMAND" ]; then
     echo "Interactive shell access is disabled."

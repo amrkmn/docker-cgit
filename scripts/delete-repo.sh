@@ -26,8 +26,8 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-REPO_DIR="${REPO_DIR:-/opt/cgit/repositories}"
-CACHE_DIR="${CACHE_DIR:-/opt/cgit/cache}"
+REPO_DIR="${REPO_DIR:-/opt/cgit/data/repositories}"
+CACHE_DIR="${CACHE_DIR:-/opt/cgit/data/cache}"
 
 if [ -z "$REPO_NAME" ]; then
     echo "Usage: $0 <repo-name> [--yes]"

@@ -38,13 +38,13 @@ commit-filter=/opt/cgit/filters/commit-links.sh
 email-filter=/opt/cgit/filters/email-gravatar.py
 
 # Cache settings
-cache-size=40
-cache-root=/opt/cgit/cache
-cache-dynamic-ttl=10
-cache-repo-ttl=10
-cache-root-ttl=10
-cache-scanrc-ttl=0
-cache-static-ttl=10
+ cache-size=40
+ cache-root=/opt/cgit/data/cache
+ cache-dynamic-ttl=10
+ cache-repo-ttl=10
+ cache-root-ttl=10
+ cache-scanrc-ttl=0
+ cache-static-ttl=10
 
 # Repository settings
 remove-suffix=1
@@ -63,7 +63,7 @@ readme=:readme.rst
 readme=:readme.txt
 
 # Scan for repositories in this directory
-scan-path=/opt/cgit/repositories/
+scan-path=/opt/cgit/data/repositories/
 
 # Optional: Include additional repository list
 # include=/opt/cgit/cgitrepos

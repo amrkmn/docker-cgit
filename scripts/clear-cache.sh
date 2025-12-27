@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-CACHE_DIR="/opt/cgit/cache"
+CACHE_DIR="/opt/cgit/data/cache"
 
 echo "Clearing cgit cache at ${CACHE_DIR}..."
 

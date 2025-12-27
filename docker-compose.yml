@@ -8,9 +8,6 @@ services:
       - "2222:22"
       - "9418:9418"
     volumes:
-      - ./data/repositories:/opt/cgit/repositories
-      - ./data/ssh:/opt/cgit/ssh
-      - ./data/cache:/opt/cgit/cache
       - ./data:/opt/cgit/data
     environment:
       - PUID=1000

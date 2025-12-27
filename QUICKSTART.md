@@ -6,7 +6,7 @@
 # Create directory
 mkdir cgit-docker && cd cgit-docker
 
-# Copy docker-compose.yml from https://github.com/amrkmn/docker-cgit
+# Copy docker-compose.yml
 wget https://raw.githubusercontent.com/amrkmn/docker-cgit/main/docker-compose.yml
 ```
 
@@ -16,23 +16,15 @@ wget https://raw.githubusercontent.com/amrkmn/docker-cgit/main/docker-compose.ym
 docker compose up -d
 ```
 
-On first run, the container automatically:
-- Creates `data/cgitrc` with default settings
-- Logs: `[cgit-init] ✓ Created /opt/cgit/data/cgitrc`
+On first run, the container automatically creates:
+- `data/cgitrc` - Main configuration
+- `data/repositories/` - Git repositories
+- `data/ssh/` - SSH keys
+- `data/cache/` - cgit cache
 
-## 3. Edit Configuration (Optional)
+Logs: `[cgit-init] ✓ Created /opt/cgit/data/cgitrc`
 
-```bash
-vim data/cgitrc
-```
-
-## 4. Start Container
-
-```bash
-docker compose up -d
-```
-
-## 5. Access
+## 3. Access
 
 ```
 http://localhost:8081
@@ -46,8 +38,14 @@ http://localhost:8081
 # SSH into container
 docker exec -it cgit sh
 
-# Or use the repo script
-./scripts/create-repo.sh myrepo "My Repository"
+# Create a new repository
+repo create my-repo "My awesome project"
+
+# Or clone from remote
+repo clone https://github.com/user/repo.git my-repo
+
+# List all repositories
+repo list
 ```
 
 ## Adding SSH Keys
@@ -56,17 +54,30 @@ docker exec -it cgit sh
 # Copy your SSH public key
 cat ~/.ssh/id_rsa.pub >> data/ssh/authorized_keys
 
-# Restart container
+# Restart container (if keys already added to container)
 docker compose restart cgit
 ```
 
 ## Common Configuration
 
-Edit `data/cgitrc`:
+Edit `data/cgitrc` to customize:
 
 | Setting | Example | Description |
 |---------|----------|-------------|
 | `css` | `css=/cgit-dark.css` | Dark theme (default) |
 | `snapshots` | `snapshots=tar.gz tar.bz2 zip` | Download formats |
 | `readme` | `readme=:README.md` | README files to display |
-| `scan-path` | `scan-path=/opt/cgit/repositories/` | Repository scan path |
+| `scan-path` | `scan-path=/opt/cgit/data/repositories/` | Repository scan path (default) |
+
+## Directory Structure
+
+```
+data/
+├── cgitrc           # Main configuration (edit this!)
+├── repositories/     # Git repositories
+├── ssh/
+│   └── authorized_keys  # SSH public keys
+└── cache/            # cgit cache
+```
+
+All data is in one `./data/` directory - single volume mount!

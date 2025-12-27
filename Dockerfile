@@ -103,28 +103,27 @@ RUN chmod +x /entrypoint.sh
 
 # Create git user and group (UID/GID 1000)
 RUN addgroup -g 1000 git && \
-    adduser -D -h /opt/cgit/repositories -u 1000 -G git -s /bin/sh git && \
-    mkdir -p /opt/cgit/ssh && \
-    touch /opt/cgit/ssh/authorized_keys && \
-    chmod 700 /opt/cgit/ssh && \
-    chmod 600 /opt/cgit/ssh/authorized_keys && \
-    chown -R git:git /opt/cgit/ssh && \
-    chown -R git:git /opt/cgit/repositories && \
+    adduser -D -h /opt/cgit/data/repositories -u 1000 -G git -s /bin/sh git && \
+    mkdir -p /opt/cgit/data/ssh && \
+    touch /opt/cgit/data/ssh/authorized_keys && \
+    chmod 700 /opt/cgit/data/ssh && \
+    chmod 600 /opt/cgit/data/ssh/authorized_keys && \
+    chown -R git:git /opt/cgit/data/ssh && \
+    chown -R git:git /opt/cgit/data/repositories && \
     echo 'git:temp123' | chpasswd
 
 # Add nginx to git group for read access to repositories
 RUN addgroup nginx git
 
 # Create directory structure
-RUN mkdir -p /opt/cgit/repositories /opt/cgit/cache /opt/cgit/bin && \
-    chown -R git:git /opt/cgit/repositories && \
-    chown -R nginx:nginx /opt/cgit/cache && \
-    chmod 755 /opt/cgit/repositories && \
-    chmod 755 /opt/cgit/cache
+RUN mkdir -p /opt/cgit/data/repositories /opt/cgit/data/cache /opt/cgit/data/ssh /opt/cgit/bin && \
+    chown -R git:git /opt/cgit/data/repositories /opt/cgit/data/ssh && \
+    chown -R nginx:nginx /opt/cgit/data/cache && \
+    chmod 755 /opt/cgit/data/repositories /opt/cgit/data/cache /opt/cgit/data/ssh
 
 # Create nginx directories
-RUN mkdir -p /run/nginx /var/log/nginx && \
-    chown -R nginx:nginx /run/nginx /var/log/nginx
+RUN mkdir -p /run/nginx /var/log/nginx /opt/cgit/data/cache && \
+    chown -R nginx:nginx /run/nginx /var/log/nginx /opt/cgit/data/cache
 
 # Remove default nginx config that conflicts before copying our config
 RUN rm -f /etc/nginx/http.d/default.conf
@@ -159,7 +158,7 @@ ENV S6_VERBOSITY=2
 EXPOSE 80 22
 
 # Declare volumes
-VOLUME ["/opt/cgit/repositories", "/opt/cgit/ssh"]
+VOLUME ["/opt/cgit/data"]
 
 # Set entrypoint to s6-overlay init
 ENTRYPOINT ["/init"]

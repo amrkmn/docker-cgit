@@ -6,12 +6,13 @@ A lightweight Docker image for [cgit](https://git.zx2c4.com/cgit/), a fast web f
 
 - Web interface for browsing repositories
 - **Dark theme** (Catppuccin Mocha color scheme)
-- Enhanced syntax highlighting (597 languages, monokai theme)
+- Enhanced syntax highlighting with Chroma (200+ languages, Svelte/Astro/SolidJS support)
 - **Git protocol** support for read-only access (git://)
 - SSH support for git push/pull (port 2222)
 - HTTP clone support (read-only)
 - Mirror repositories from GitHub, GitLab, Codeberg, or any git service
-- README rendering
+- README rendering with Markdown/ReST support
+- Auto-configuration on first run
 - Multi-arch support (amd64/arm64)
 
 ## Quick Start

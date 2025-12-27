@@ -4,7 +4,7 @@
 
 set -e
 
-REPO_DIR="${REPO_DIR:-/opt/cgit/repositories}"
+REPO_DIR="${REPO_DIR:-/opt/cgit/data/repositories}"
 CGIT_HOST="${CGIT_HOST:-localhost}"
 CGIT_PORT="${CGIT_PORT:-2222}"
 

@@ -7,8 +7,8 @@ set -e
 REPO_NAME="$1"
 REPO_DESC="${2:-A git repository}"
 REPO_OWNER="${3:-${CGIT_OWNER:-$(git config user.name 2>/dev/null || echo 'Unknown User')} <$(git config user.email 2>/dev/null || echo 'unknown@example.com')>}"
-REPO_DIR="${REPO_DIR:-/opt/cgit/repositories}"
-CACHE_DIR="${CACHE_DIR:-/opt/cgit/cache}"
+REPO_DIR="${REPO_DIR:-/opt/cgit/data/repositories}"
+CACHE_DIR="${CACHE_DIR:-/opt/cgit/data/cache}"
 CGIT_HOST="${CGIT_HOST:-localhost}"
 CGIT_PORT="${CGIT_PORT:-2222}"
 
@@ -28,7 +28,7 @@ if [ -z "$REPO_NAME" ]; then
     echo "  $0 my-project 'My awesome project'"
     echo "  $0 my-project 'My awesome project' 'John Doe <john@example.com>'"
     echo ""
-    echo "Note: Repositories are created in /opt/cgit/repositories by default"
+    echo "Note: Repositories are created in /opt/cgit/data/repositories by default"
     exit 1
 fi
 
