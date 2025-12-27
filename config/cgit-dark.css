@@ -1053,4 +1053,5 @@ div#cgit .codehilite .ge { font-style: italic; }
 div#cgit .codehilite .gi { color: #a6e3a1; }
 div#cgit .codehilite .gs { font-weight: bold; }
 div#cgit .codehilite .gu { color: #6c7080; font-style: italic; }
+div#cgit .codehilite .w { color: transparent; }
 
