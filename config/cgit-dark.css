@@ -332,12 +332,6 @@ div#cgit table.blob pre {
  * Uses Catppuccin Mocha color palette
  */
 
-/* Prevent color inheritance in syntax highlighted code */
-pre.pygchroma code,
-pre.pygchroma code span {
-	color: inherit;
-}
-
 /* Keywords */
 .pygk { color: #cba6f7; }						/* keyword */
 .pygkd { color: #cba6f7; }						/* keyword.declaration */
