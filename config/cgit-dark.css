@@ -310,7 +310,6 @@ div#cgit table.blob td.hashes,
 div#cgit table.blob td.lines {
 	margin: 0; padding: 0 0 0 0.5em;
 	vertical-align: top;
-	color: #cdd6f4;
 }
 
 div#cgit table.blob td.linenumbers {
@@ -332,6 +331,12 @@ div#cgit table.blob pre {
  * Matches Chroma output with --html-prefix=pyg
  * Uses Catppuccin Mocha color palette
  */
+
+/* Prevent color inheritance in syntax highlighted code */
+pre.pygchroma code,
+pre.pygchroma code span {
+	color: inherit;
+}
 
 /* Keywords */
 .pygk { color: #cba6f7; }						/* keyword */
