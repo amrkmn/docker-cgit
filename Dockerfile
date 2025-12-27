@@ -103,29 +103,21 @@ RUN chmod +x /entrypoint.sh
 
 # Create git user and group (UID/GID 1000)
 RUN addgroup -g 1000 git && \
-    adduser -D -h /opt/cgit/data/repositories -u 1000 -G git -s /bin/sh git
-
-RUN mkdir -p /opt/cgit/data/ssh && \
-    touch /opt/cgit/data/ssh/authorized_keys && \
-    chmod 700 /opt/cgit/data/ssh && \
-    chmod 600 /opt/cgit/data/ssh/authorized_keys && \
-    chown -R git:git /opt/cgit/data/ssh && \
-    chown -R git:git /opt/cgit/data/repositories && \
+    adduser -D -h /opt/cgit/data/repositories -u 1000 -G git -s /bin/sh git && \
     echo 'git:temp123' | chpasswd
 
 # Add nginx to git group for read access to repositories
 RUN addgroup nginx git
 
-# Create directory structure
-RUN mkdir -p /opt/cgit/data/repositories /opt/cgit/data/cache /opt/cgit/data/ssh /opt/cgit/bin
-
-RUN chown -R git:git /opt/cgit/data/repositories /opt/cgit/data/ssh && \
+# Create /opt/cgit/data directory structure
+RUN mkdir -p /opt/cgit/data/repositories /opt/cgit/data/cache /opt/cgit/data/ssh /opt/cgit/bin && \
+    mkdir -p /run/nginx /var/log/nginx && \
+    touch /opt/cgit/data/ssh/authorized_keys && \
+    chmod 700 /opt/cgit/data/ssh && \
+    chmod 600 /opt/cgit/data/ssh/authorized_keys && \
+    chown -R git:git /opt/cgit/data/ssh /opt/cgit/data/repositories && \
     chown -R nginx:nginx /opt/cgit/data/cache && \
     chmod 755 /opt/cgit/data/repositories /opt/cgit/data/cache /opt/cgit/data/ssh
-
-# Create nginx directories
-RUN mkdir -p /run/nginx /var/log/nginx /opt/cgit/data/cache && \
-    chown -R nginx:nginx /run/nginx /var/log/nginx /opt/cgit/data/cache
 
 # Remove default nginx config that conflicts before copying our config
 RUN rm -f /etc/nginx/http.d/default.conf
