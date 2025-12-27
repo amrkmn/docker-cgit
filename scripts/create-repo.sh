@@ -66,8 +66,8 @@ fi
 # Set default branch to main
 git config --local cgit.defbranch "main"
 
-# Enable README rendering if present
-git config --local cgit.readme "README.md"
+# Enable README rendering if present (note: colon prefix required for cgit)
+git config --local cgit.readme ":README.md"
 
 # Optional: set a section/category
 # git config --local cgit.section "Personal Projects"

@@ -78,8 +78,8 @@ fi
 DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
 git config --local cgit.defbranch "$DEFAULT_BRANCH"
 
-# Enable README rendering if present
-git config --local cgit.readme "README.md"
+# Enable README rendering if present (note: colon prefix required for cgit)
+git config --local cgit.readme ":README.md"
 
 # Add clone URL metadata
 git config --local cgit.clone-url "$GIT_URL"
