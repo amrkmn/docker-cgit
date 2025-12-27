@@ -5,10 +5,13 @@ A lightweight Docker image for [cgit](https://git.zx2c4.com/cgit/), a fast web f
 ## Features
 
 - Web interface for browsing repositories
+- **Dark theme** (Catppuccin Mocha color scheme)
+- Enhanced syntax highlighting (597 languages, monokai theme)
+- **Git protocol** support for read-only access (git://)
 - SSH support for git push/pull (port 2222)
 - HTTP clone support (read-only)
 - Mirror repositories from GitHub, GitLab, Codeberg, or any git service
-- Syntax highlighting and README rendering
+- README rendering
 - Multi-arch support (amd64/arm64)
 
 ## Quick Start
@@ -24,6 +27,7 @@ services:
     ports:
       - "8081:80"
       - "2222:22"
+      - "9418:9418"
     volumes:
       - ./data/repositories:/opt/cgit/repositories
       - ./data/ssh:/opt/cgit/ssh
@@ -32,6 +36,7 @@ services:
       - PUID=1000
       - PGID=1000
       - CGIT_HOST=localhost
+      - CGIT_PORT=2222
       - CGIT_OWNER=Your Name <email@example.com>
     restart: unless-stopped
 ```
@@ -46,7 +51,7 @@ open http://localhost:8081
 
 ## Changing Ports
 
-You can change the SSH port mapping in `docker-compose.yml`:
+You can change port mappings in `docker-compose.yml`:
 
 ```yaml
 services:
@@ -55,6 +60,7 @@ services:
       - "8081:80"      # Web interface (host:container)
       - "22:22"        # SSH on standard port (requires root/sudo)
       # - "2223:22"    # Or use any other port
+      - "9418:9418"    # Git protocol (read-only)
 ```
 
 **Note**: Mapping to port 22 requires root/sudo privileges.
@@ -73,8 +79,11 @@ docker compose exec cgit repo clone https://github.com/user/repo.git
 # List all repositories
 docker compose exec cgit repo list
 
-# Delete a repository
-docker compose exec cgit repo delete my-project
+# Delete a repository (non-interactive, requires --yes flag)
+docker compose exec cgit repo delete my-project --yes
+
+# Delete a repository (interactive, requires -it flag)
+docker compose exec -it cgit repo delete my-project
 
 # Clear cgit cache manually
 docker compose exec cgit repo clear-cache
@@ -83,23 +92,37 @@ docker compose exec cgit repo clear-cache
 docker compose exec cgit repo help
 ```
 
+> **Note**: The delete command requires `--yes` flag when running in non-interactive mode (without `-it`).
 > **Note**: The old individual scripts (`create-repo.sh`, `clone-repo.sh`, etc.) are still available for backward compatibility.
 > **Note**: Repository changes (create, delete, clone) automatically clear the cgit cache, so new repositories appear immediately without restarting the container.
 
-## Creating Repositories
+## Customizing Clone URLs
 
-Use the `repo` command to manage repositories (see "Managing Repositories" section above).
+To customize clone URLs for a specific repository, edit the repository's git config:
 
-Update a mirrored repository:
 ```bash
-docker compose exec cgit sh -c "cd /opt/cgit/repositories/my-repo.git && git remote update"
+cd data/repositories/my-repo.git
+GIT_DIR=. git config --local cgit.clone-url "git://git.example.com/my-repo.git https://git.example.com/my-repo.git ssh://git@git.example.com:2222/my-repo.git"
 ```
+
+This will display three clone options on the repository page:
+- `git://git.example.com/my-repo.git` (read-only, port 9418)
+- `https://git.example.com/my-repo.git` (read-only, port 80)
+- `ssh://git@git.example.com:2222/my-repo.git` (read-write, port 2222)
 
 ## Git Operations
 
+### Clone via Git Protocol (read-only, port 9418)
+```bash
+git clone git://localhost:9418/my-project.git
+
+# If port 9418 is forwarded to standard git port
+git clone git://git.example.com/my-project.git
+```
+
 ### Clone via SSH (read-write)
 ```bash
-# Default setup
+# Default setup (port 2222)
 git clone ssh://git@localhost:2222/my-project.git
 
 # If using port 22
@@ -118,8 +141,25 @@ git clone http://localhost:8081/my-project.git
 
 Edit these files to customize:
 - `config/cgitrc` - Main cgit configuration
+- `config/cgit-dark.css` - Dark theme styles (Catppuccin Mocha)
+- `config/syntax-highlighting-dark.py` - Syntax highlighting filter (monokai theme)
 - `config/sshd_config` - SSH server settings
 - `config/nginx/default.conf` - Web server configuration
+
+### Syntax Highlighting
+
+The image includes Pygments 3.3.2 with support for **597 programming languages** and **26 color schemes**. The default theme is **monokai** (dark).
+
+To change the color scheme, edit `config/syntax-highlighting-dark.py`:
+```python
+style='monokai'  # Change to: dracula, gruvbox-dark, solarized-dark, etc.
+```
+
+Available color schemes: `abap`, `algol`, `algol_nu`, `arduino`, `autumn`, `borland`, `bw`, `catppuccin-mocha`, `colorful`, `default`, `emacs`, `friendly`, `fruity`, `gruvbox-dark`, `igor`, `lovelace`, `manni`, `material`, `monokai`, `murphy`, `native`, `nord`, `onedark`, `paraiso-dark`, `pastie`, `perldoc`, `rainbow_dash`, `rrt`, `sas`, `solarized-dark`, `solarized-light`, `stata-dark`, `stata-light`, `tango`, `trac`, `vim`, `vs`, `xcode`.
+
+### Supported Languages
+
+Popular languages include: Python, JavaScript, TypeScript, Go, Rust, C, C++, Java, Ruby, PHP, Dockerfile, YAML, JSON, SQL, Bash, HTML, CSS, Markdown, and 580+ more.
 
 ## SSH Authentication
 
@@ -138,8 +178,8 @@ docker compose restart
 - `PUID` - User ID for git user (default: 1000)
 - `PGID` - Group ID for git user (default: 1000)
 - `CGIT_HOST` - Hostname for clone URLs (default: localhost)
-- `CGIT_PORT` - Port for clone URLs (default: 2222)
-- `CGIT_OWNER` - Default owner name for new repositories (default: Unknown)
+- `CGIT_PORT` - SSH port for clone URLs (default: 2222)
+- `CGIT_OWNER` - Default owner name for new repositories (default: Unknown User <unknown@example.com>)
 
 Example:
 ```yaml
@@ -153,12 +193,46 @@ environment:
 
 - **8081** - Web interface (cgit)
 - **2222** - SSH server (git operations)
+- **9418** - Git protocol (read-only)
 
 ## Volumes
 
 - `./data/repositories` - Git repositories
 - `./data/ssh` - SSH authorized_keys
 - `./data/cache` - cgit cache
+
+## Repository Configuration
+
+Each repository can override cgit settings via `git config --local cgit.*`:
+
+```bash
+cd data/repositories/my-repo.git
+
+GIT_DIR=. git config --local cgit.name "Display Name"
+GIT_DIR=. git config --local cgit.desc "Description of the repository"
+GIT_DIR=. git config --local cgit.owner "Owner Name <email@example.com>"
+GIT_DIR=. git config --local cgit.section "Category/Group"
+GIT_DIR=. git config --local cgit.defbranch "main"
+GIT_DIR=. git config --local cgit.readme=":README.md"
+```
+
+## Architecture
+
+### Multi-stage Docker Build
+
+- **Stage 1 (builder)**: Compiles cgit from source
+- **Stage 2 (runtime)**: Alpine-based image with nginx, fcgiwrap, openssh-server, and s6-overlay
+
+### Services (s6-overlay managed)
+
+- **cgit-base**: Base bundle, runs first
+- **prepare-user**: Adjusts git user UID/GID based on PUID/PGID
+- **prepare-sshd**: Generates SSH host keys if missing
+- **prepare-fcgiwrap**: Prepares fcgiwrap socket directory
+- **sshd**: SSH daemon (port 22)
+- **fcgiwrap**: FastCGI wrapper executing cgit.cgi
+- **git-daemon**: Git protocol server (port 9418, read-only)
+- **nginx**: Web server for cgit UI (port 80)
 
 ## License
 
@@ -168,3 +242,4 @@ GPL-2.0 (same as cgit)
 
 - [cgit upstream](https://git.zx2c4.com/cgit/)
 - [Docker image](https://github.com/amrkmn/docker-cgit)
+- [Image on GitHub Container Registry](https://github.com/amrkmn/docker-cgit/pkgs/container/cgit)
