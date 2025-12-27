@@ -16,38 +16,60 @@ A lightweight Docker image for [cgit](https://git.zx2c4.com/cgit/), a fast web f
 
 ## Quick Start
 
-Create `docker-compose.yml`:
+### 1. Initial Setup
 
-```yaml
-services:
-  cgit:
-    image: ghcr.io/amrkmn/cgit:latest
-    container_name: cgit
-    hostname: cgit
-    ports:
-      - "8081:80"
-      - "2222:22"
-      - "9418:9418"
-    volumes:
-      - ./data/repositories:/opt/cgit/repositories
-      - ./data/ssh:/opt/cgit/ssh
-      - ./data/cache:/opt/cgit/cache
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - CGIT_HOST=localhost
-      - CGIT_PORT=2222
-      - CGIT_OWNER=Your Name <email@example.com>
-    restart: unless-stopped
-```
+Run the setup script to create necessary directories and configuration files:
 
 ```bash
-# Start container
-docker compose up -d
-
-# Access cgit web interface
-open http://localhost:8081
+./setup.sh
 ```
+
+This creates:
+- `data/repositories/` - Git repositories directory
+- `data/ssh/` - SSH keys directory
+- `data/cache/` - cgit cache directory
+- `data/cgitrc` - cgit configuration (copied from `config/cgitrc`)
+
+### 2. Edit Configuration (Optional)
+
+Edit `data/cgitrc` to customize cgit:
+
+```bash
+vim data/cgitrc
+```
+
+Common settings:
+- `css=/cgit-dark.css` - Dark theme (default)
+- `snapshots=tar.gz tar.bz2 tar.xz zip` - Download formats
+- `readme=:README.md` - README files to display
+- `scan-path=/opt/cgit/repositories/` - Repository scan path
+
+### 3. Start Container
+
+```bash
+docker compose up -d
+```
+
+### 4. Access Web Interface
+
+```bash
+# Browser
+open http://localhost:8081
+
+# Or curl
+curl http://localhost:8081
+```
+
+### Configuration Files
+
+After running `setup.sh`, you can edit:
+
+| File | Description |
+|------|-------------|
+| `data/cgitrc` | Main cgit configuration (CSS, filters, scan-path) |
+| `data/ssh/authorized_keys` | SSH public keys for git push access |
+| `config/cgit-dark.css` | Dark theme CSS (edits require rebuild) |
+| `config/cgitrc` | Source configuration (for reference or development) |
 
 ## Changing Ports
 
