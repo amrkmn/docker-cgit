@@ -11,7 +11,7 @@ services:
       - ./data/repositories:/opt/cgit/repositories
       - ./data/ssh:/opt/cgit/ssh
       - ./data/cache:/opt/cgit/cache
-      - ./data/cgitrc:/opt/cgit/cgitrc:ro
+      - ./data:/opt/cgit/data
     environment:
       - PUID=1000
       - PGID=1000

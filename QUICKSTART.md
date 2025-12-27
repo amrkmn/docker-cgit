@@ -10,12 +10,15 @@ mkdir cgit-docker && cd cgit-docker
 wget https://raw.githubusercontent.com/amrkmn/docker-cgit/main/docker-compose.yml
 ```
 
-## 2. Get Configuration File
+## 2. Start Container
 
 ```bash
-# Extract cgitrc from the image (creates data/cgitrc)
-docker run --rm -v $(pwd)/data:/data ghcr.io/amrkmn/cgit:latest sh -c "cp /opt/cgit/cgitrc /data/"
+docker compose up -d
 ```
+
+On first run, the container automatically:
+- Creates `data/cgitrc` with default settings
+- Logs: `[cgit-init] ✓ Created /opt/cgit/data/cgitrc`
 
 ## 3. Edit Configuration (Optional)
 

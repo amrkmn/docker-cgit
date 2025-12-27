@@ -97,6 +97,10 @@ RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
 # Copy cgit from builder stage
 COPY --from=builder /opt/cgit /opt/cgit
 
+# Create entrypoint wrapper for auto-config
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Create git user and group (UID/GID 1000)
 RUN addgroup -g 1000 git && \
     adduser -D -h /opt/cgit/repositories -u 1000 -G git -s /bin/sh git && \

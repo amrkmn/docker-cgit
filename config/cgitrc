@@ -1,5 +1,8 @@
 # cgit configuration file
 # Documentation: https://git.zx2c4.com/cgit/tree/cgitrc.5.txt
+#
+# Auto-include user config if exists (created on first run)
+include=/opt/cgit/data/cgitrc
 
 # General settings
 root-title=Git Repository Browser
