@@ -6,6 +6,7 @@ root-title=Git Repository Browser
 root-desc=Personal Git Repositories
 virtual-root=/
 robots=noindex, nofollow
+css=/cgit-dark.css
 
 # Enable features
 enable-commit-graph=1

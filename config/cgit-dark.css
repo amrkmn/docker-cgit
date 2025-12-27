@@ -1,0 +1,166 @@
+/* cgit Dark Theme */
+body {
+    background-color: #1e1e2e;
+    color: #cdd6f4;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+a {
+    color: #89b4fa;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #b4befe;
+    text-decoration: underline;
+}
+
+table.list {
+    background-color: #1e1e2e;
+    border: 1px solid #313244;
+}
+
+table.list tr {
+    background-color: #1e1e2e;
+}
+
+table.list tr:hover {
+    background-color: #313244;
+}
+
+th {
+    background-color: #313244;
+    color: #cdd6f4;
+    padding: 0.25em 0.5em;
+    border: 1px solid #45475a;
+}
+
+td {
+    padding: 0.25em 0.5em;
+    border: 1px solid #45475a;
+}
+
+#header {
+    background-color: #1e1e2e;
+    border-bottom: 1px solid #45475a;
+    padding: 0.5em;
+}
+
+#header a {
+    color: #cdd6f4;
+    font-weight: bold;
+}
+
+.tabs {
+    background-color: #1e1e2e;
+    border-bottom: 1px solid #45475a;
+    padding: 0.5em;
+}
+
+.tabs a {
+    color: #a6adc8;
+    padding: 0.5em;
+}
+
+.tabs a.active {
+    color: #cdd6f4;
+    background-color: #313244;
+}
+
+.content {
+    background-color: #1e1e2e;
+    padding: 1em;
+}
+
+.blob, .commit-msg {
+    background-color: #11111b;
+    padding: 1em;
+    border: 1px solid #45475a;
+    border-radius: 4px;
+}
+
+.diffstat {
+    color: #a6adc8;
+}
+
+.diffadd {
+    color: #a6e3a1;
+}
+
+.diffrem {
+    color: #f38ba8;
+}
+
+.age-comment {
+    color: #a6adc8;
+}
+
+.decoration {
+    color: #a6adc8;
+}
+
+table.diffstat {
+    background-color: #11111b;
+}
+
+table.diffstat td {
+    border: none;
+}
+
+table.diffstat td.add {
+    color: #a6e3a1;
+}
+
+table.diffstat td.rem {
+    color: #f38ba8;
+}
+
+span.commit-title {
+    color: #f9e2af;
+}
+
+span.author-date {
+    color: #a6adc8;
+}
+
+pre {
+    background-color: #11111b;
+    color: #cdd6f4;
+    padding: 1em;
+    border: 1px solid #45475a;
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+code {
+    background-color: #313244;
+    color: #cdd6f4;
+    padding: 0.1em 0.3em;
+    border-radius: 2px;
+}
+
+input, select {
+    background-color: #313244;
+    color: #cdd6f4;
+    border: 1px solid #45475a;
+    padding: 0.3em;
+}
+
+input:focus, select:focus {
+    outline: 1px solid #89b4fa;
+}
+
+.pager {
+    margin: 1em 0;
+    text-align: center;
+}
+
+.pager a {
+    padding: 0.5em 1em;
+    background-color: #313244;
+    border-radius: 4px;
+}
+
+.pager a:hover {
+    background-color: #45475a;
+}
