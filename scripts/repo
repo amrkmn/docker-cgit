@@ -21,7 +21,7 @@ function show_help() {
     echo "Commands:"
     echo "  create <name> [description] [owner]       Create a new bare repository"
     echo "  clone <url> [name] [description] [owner] Clone/mirror a repository"
-    echo "  delete <name>                             Delete a repository"
+    echo "  delete <name> [--yes]                     Delete a repository"
     echo "  list                                      List all repositories"
     echo "  clear-cache                               Clear cgit cache"
     echo ""
@@ -29,6 +29,7 @@ function show_help() {
     echo "  repo create my-project"
     echo "  repo clone https://github.com/user/repo.git"
     echo "  repo delete my-project"
+    echo "  repo delete my-project --yes              Skip confirmation prompt"
     echo "  repo list"
     echo ""
 }
