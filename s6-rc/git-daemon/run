@@ -1,0 +1,2 @@
+#!/command/execlineb -P
+s6-setuidgid git /usr/libexec/git-core/git-daemon --reuseaddr --verbose --export-all --base-path=/opt/cgit/repositories /opt/cgit/repositories

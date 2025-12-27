@@ -6,6 +6,7 @@ services:
     ports:
       - "8081:80"
       - "2222:22"
+      - "9418:9418"
     volumes:
       - ./data/repositories:/opt/cgit/repositories
       - ./data/ssh:/opt/cgit/ssh
