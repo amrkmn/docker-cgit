@@ -7,7 +7,7 @@
 # Features:
 # - 200+ language support via Chroma
 # - Dark theme compatible (monokai style)
-# - HTML table output for cgit compatibility
+# - Pygments-compatible CSS classes (matches cgit-dark.css)
 
 CHROMA="${CHROMA_BIN:-/usr/local/bin/chroma}"
 THEME="${CHROMA_THEME:-monokai}"
@@ -25,12 +25,12 @@ EXT="${FILENAME##*.}"
 # --html: Output as HTML
 # --html-only: Output HTML fragment (no header/footer)
 # --style: Color theme
-# --lexer: Language (auto-detect if not specified)
+# --html-prefix: CSS class prefix (pyg for Pygments compatibility)
 # --html-tab-width: Tab width in spaces
-# --html-styles: Include CSS styles inline
+# --lexer: Language (auto-detect if not specified)
 
 if [ -n "$EXT" ]; then
-    echo "$CODE" | "$CHROMA" --html --html-only --style="$THEME" --html-tab-width=4 --lexer="$EXT" --html-styles
+    echo "$CODE" | "$CHROMA" --html --html-only --style="$THEME" --html-tab-width=4 --lexer="$EXT" --html-prefix=pyg
 else
-    echo "$CODE" | "$CHROMA" --html --html-only --style="$THEME" --html-tab-width=4 --html-styles
+    echo "$CODE" | "$CHROMA" --html --html-only --style="$THEME" --html-tab-width=4 --html-prefix=pyg
 fi
