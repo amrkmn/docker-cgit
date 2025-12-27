@@ -2,25 +2,29 @@
 # cgit about-filter for formatting README files
 # Converts markdown, reStructuredText, HTML, and plain text to HTML
 
-FILE="$1"
+# Get filename from argument (cgit passes it as $1)
+FILENAME="$1"
+
+# Read content from stdin
+CONTENT=$(cat)
 
 # Check file extension and convert accordingly
-case "$FILE" in
+case "$FILENAME" in
     *.md|*.markdown)
         # Convert Markdown to HTML using markdown library
-        cat "$FILE" | python3 -m markdown 2>/dev/null || cat "$FILE"
+        echo "$CONTENT" | python3 -m markdown 2>/dev/null || echo "$CONTENT"
         ;;
     *.rst)
         # Convert reStructuredText to HTML
-        rst2html "$FILE" 2>/dev/null | sed -e '1,/<body>/d' -e '/<\/body>/,$d' || cat "$FILE"
+        echo "$CONTENT" | rst2html 2>/dev/null | sed -e '1,/<body>/d' -e '/<\/body>/,$d' || echo "$CONTENT"
         ;;
     *.html)
         # HTML files - pass through as-is
-        cat "$FILE"
+        echo "$CONTENT"
         ;;
     *)
         # Plain text files - escape HTML and wrap in <pre>
-        sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' "$FILE" | \
+        echo "$CONTENT" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' | \
         awk 'BEGIN { print "<pre>" } { print } END { print "</pre>" }'
         ;;
 esac
