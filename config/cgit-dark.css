@@ -799,6 +799,15 @@ div#cgit div.commit-subject a.deco {
 	font-size: 75%;
 }
 
+/* Override table.list td a color for badges */
+div#cgit table.list td a.branch-deco,
+div#cgit table.list td a.tag-deco,
+div#cgit table.list td a.tag-annotated-deco,
+div#cgit table.list td a.remote-deco,
+div#cgit table.list td a.deco {
+	color: #1e1e2e;
+}
+
 div#cgit table.stats {
 	border: solid 1px black;
 	border-collapse: collapse;
