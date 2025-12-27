@@ -65,6 +65,7 @@ RUN apk add --no-cache \
     python3 \
     py3-pip \
     py3-markdown \
+    py3-pygments \
     # Lua support
     luajit \
     lua5.1-http \

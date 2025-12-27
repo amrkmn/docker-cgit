@@ -11,8 +11,8 @@ CONTENT=$(cat)
 # Check file extension and convert accordingly
 case "$FILENAME" in
     *.md|*.markdown)
-        # Convert Markdown to HTML using markdown library
-        echo "$CONTENT" | python3 -m markdown 2>/dev/null || echo "$CONTENT"
+        # Convert Markdown to HTML using markdown library with extensions
+        echo "$CONTENT" | python3 -c "import sys, markdown; print(markdown.markdown(sys.stdin.read(), extensions=['markdown.extensions.fenced_code', 'markdown.extensions.tables', 'markdown.extensions.codehilite']))" 2>/dev/null || echo "$CONTENT"
         ;;
     *.rst)
         # Convert reStructuredText to HTML

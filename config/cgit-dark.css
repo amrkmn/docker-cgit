@@ -983,3 +983,74 @@ div#cgit table.ssdiff td.space {
 div#cgit table.ssdiff td.space div {
 	min-height: 3em;
 }
+
+/* Pygments syntax highlighting for code blocks in README */
+div#cgit .codehilite {
+	background: #1e1e2e;
+	padding: 1em;
+	border-radius: 4px;
+	margin: 1em 0;
+}
+
+div#cgit .codehilite pre {
+	margin: 0;
+	padding: 0;
+	background: transparent;
+}
+
+div#cgit .codehilite code {
+	font-family: monospace;
+	background: transparent;
+}
+
+div#cgit .codehilite .k { color: #cba6f7; }
+div#cgit .codehilite .kd { color: #cba6f7; }
+div#cgit .codehilite .kn { color: #cba6f7; }
+div#cgit .codehilite .kp { color: #cba6f7; }
+div#cgit .codehilite .kr { color: #f5e0dc; }
+div#cgit .codehilite .kt { color: #89b4fa; }
+div#cgit .codehilite .na { color: #f9e2af; }
+div#cgit .codehilite .nc { color: #f9e2af; }
+div#cgit .codehilite .no { color: #fab387; }
+div#cgit .codehilite .nd { color: #f9e2af; }
+div#cgit .codehilite .ne { color: #f38ba8; }
+div#cgit .codehilite .nf { color: #f9e2af; }
+div#cgit .codehilite .nx { color: #f9e2af; }
+div#cgit .codehilite .nt { color: #f5e0dc; }
+div#cgit .codehilite .l { color: #f9e2af; }
+div#cgit .codehilite .ld { color: #fab387; }
+div#cgit .codehilite .s { color: #a6e3a1; }
+div#cgit .codehilite .sa { color: #a6e3a1; }
+div#cgit .codehilite .sb { color: #a6e3a1; }
+div#cgit .codehilite .sc { color: #a6e3a1; }
+div#cgit .codehilite .sd { color: #a6e3a1; }
+div#cgit .codehilite .s2 { color: #a6e3a1; }
+div#cgit .codehilite .se { color: #fab387; }
+div#cgit .codehilite .sh { color: #a6e3a1; }
+div#cgit .codehilite .si { color: #a6e3a1; }
+div#cgit .codehilite .sx { color: #a6e3a1; }
+div#cgit .codehilite .sr { color: #a6e3a1; }
+div#cgit .codehilite .s1 { color: #a6e3a1; }
+div#cgit .codehilite .ss { color: #a6e3a1; }
+div#cgit .codehilite .m { color: #fab387; }
+div#cgit .codehilite .mb { color: #fab387; }
+div#cgit .codehilite .mf { color: #fab387; }
+div#cgit .codehilite .mh { color: #fab387; }
+div#cgit .codehilite .mi { color: #fab387; }
+div#cgit .codehilite .il { color: #fab387; }
+div#cgit .codehilite .mo { color: #fab387; }
+div#cgit .codehilite .o { color: #89dceb; }
+div#cgit .codehilite .ow { color: #89dceb; }
+div#cgit .codehilite .c { color: #6c7080; font-style: italic; }
+div#cgit .codehilite .ch { color: #6c7080; font-style: italic; }
+div#cgit .codehilite .cm { color: #6c7080; font-style: italic; }
+div#cgit .codehilite .c1 { color: #6c7080; font-style: italic; }
+div#cgit .codehilite .cs { color: #6c7080; font-style: italic; }
+div#cgit .codehilite .cp { color: #6c7080; font-style: italic; }
+div#cgit .codehilite .cpf { color: #6c7080; font-style: italic; }
+div#cgit .codehilite .gd { color: #f38ba8; }
+div#cgit .codehilite .ge { font-style: italic; }
+div#cgit .codehilite .gi { color: #a6e3a1; }
+div#cgit .codehilite .gs { font-weight: bold; }
+div#cgit .codehilite .gu { color: #6c7080; font-style: italic; }
+
