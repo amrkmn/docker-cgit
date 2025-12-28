@@ -11,6 +11,7 @@ A lightweight Docker image for [cgit](https://git.zx2c4.com/cgit/), a fast web f
 - SSH support for git push/pull (port 2222)
 - HTTP clone support (read-only)
 - Mirror repositories from GitHub, GitLab, Codeberg, or any git service
+- **Automatic mirror synchronization** with configurable schedules (cron expressions)
 - README rendering with Markdown/ReST support
 - Auto-configuration on first run
 - Multi-arch support (amd64/arm64)
@@ -103,6 +104,12 @@ docker compose exec cgit repo create my-project "My Description" "Owner <email>"
 # Clone/mirror a repository
 docker compose exec cgit repo clone https://github.com/user/repo.git
 
+# Clone with automatic synchronization (every 6 hours by default)
+docker compose exec cgit repo clone https://github.com/user/repo.git --mirror
+
+# Clone with custom sync schedule (cron expression)
+docker compose exec cgit repo clone https://github.com/user/repo.git --mirror --schedule "0 */12 * * *"
+
 # List all repositories
 docker compose exec cgit repo list
 
@@ -122,6 +129,82 @@ docker compose exec cgit repo help
 > **Note**: The delete command requires `--yes` flag when running in non-interactive mode (without `-it`).
 > **Note**: The old individual scripts (`create-repo.sh`, `clone-repo.sh`, etc.) are still available for backward compatibility.
 > **Note**: Repository changes (create, delete, clone) automatically clear the cgit cache, so new repositories appear immediately without restarting the container.
+
+## Automatic Mirror Synchronization
+
+The container includes a background service that automatically synchronizes mirrored repositories on configurable schedules using cron expressions.
+
+### Managing Mirrors
+
+```bash
+# Enable auto-sync for an existing repository (every 6 hours by default)
+docker compose exec cgit repo mirror enable my-project
+
+# Enable with custom schedule and timeout
+docker compose exec cgit repo mirror enable my-project --schedule "0 */12 * * *" --timeout 1200
+
+# Disable auto-sync (keeps repository, stops automatic updates)
+docker compose exec cgit repo mirror disable my-project
+
+# List all mirrored repositories
+docker compose exec cgit repo mirror list
+
+# List only enabled mirrors
+docker compose exec cgit repo mirror list --enabled-only
+
+# Show detailed mirror status
+docker compose exec cgit repo mirror status my-project
+
+# Manually sync a repository now
+docker compose exec cgit repo mirror sync my-project
+
+# Sync all enabled mirrors
+docker compose exec cgit repo mirror sync-all
+
+# View sync logs
+docker compose exec cgit repo mirror logs
+
+# View logs for specific repository
+docker compose exec cgit repo mirror logs my-project
+```
+
+### Configuration
+
+Default settings:
+- **Sync interval**: Every 6 hours (`0 */6 * * *`)
+- **Timeout**: 600 seconds (10 minutes)
+- **Max concurrent syncs**: 3 repositories at a time
+- **Log rotation**: Max 10MB per log file, keep 3 rotated logs
+
+All settings can be customized per repository when enabling mirrors.
+
+### Cron Schedule Examples
+
+```bash
+# Every hour
+--schedule "0 * * * *"
+
+# Every 12 hours
+--schedule "0 */12 * * *"
+
+# Daily at 2 AM
+--schedule "0 2 * * *"
+
+# Every Monday at midnight
+--schedule "0 0 * * 1"
+
+# Every 15 minutes
+--schedule "*/15 * * * *"
+```
+
+### How It Works
+
+1. **Background Service**: A daemon runs continuously checking for repositories due for sync every 60 seconds
+2. **Parallel Processing**: Up to 3 repositories sync in parallel to prevent resource exhaustion
+3. **Low Priority**: Syncs run with `nice -n 19` to avoid impacting web server performance
+4. **Automatic Retry**: Failed syncs are logged and retried on the next scheduled interval
+5. **Status Tracking**: Each sync updates status, timestamp, and next sync time in `/opt/cgit/data/mirror-config.json`
+6. **Logging**: All sync operations are logged to `/opt/cgit/data/logs/mirror-sync.log` with automatic rotation
 
 ## Customizing Clone URLs
 
@@ -259,6 +342,7 @@ GIT_DIR=. git config --local cgit.readme=":README.md"
 - **sshd**: SSH daemon (port 22)
 - **fcgiwrap**: FastCGI wrapper executing cgit.cgi
 - **git-daemon**: Git protocol server (port 9418, read-only)
+- **mirror-sync**: Background daemon for automatic repository synchronization
 - **nginx**: Web server for cgit UI (port 80)
 
 ## License

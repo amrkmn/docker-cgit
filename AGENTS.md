@@ -28,8 +28,17 @@ All repository operations use the unified `repo` command (scripts/repo:1).
 # Core operations
 docker compose exec cgit repo create test-repo "Description" "Owner <email>"
 docker compose exec cgit repo clone https://github.com/user/repo.git
+docker compose exec cgit repo clone https://github.com/user/repo.git --mirror  # Enable auto-sync
 docker compose exec cgit repo list           # List all repositories with metadata
 docker compose exec cgit repo update test-repo  # Update mirrored repository
+
+# Mirror management
+docker compose exec cgit repo mirror enable test-repo  # Enable auto-sync
+docker compose exec cgit repo mirror disable test-repo # Disable auto-sync
+docker compose exec cgit repo mirror list    # List all mirrors
+docker compose exec cgit repo mirror status test-repo  # Show mirror status
+docker compose exec cgit repo mirror sync test-repo    # Manual sync now
+docker compose exec cgit repo mirror logs    # View sync logs
 
 # Destructive operations
 docker compose exec cgit repo delete test-repo --yes  # Skip confirmation
