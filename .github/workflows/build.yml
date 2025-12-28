@@ -81,7 +81,6 @@ jobs:
             SOURCE_COMMIT=${{ github.sha }}
             SOURCE_VERSION=${{ github.ref_name }}
             TARGETPLATFORM=${{ matrix.platform }}
-            BUILDPLATFORM=linux/amd64
         env:
           BUILDKIT_PROGRESS: plain
 
