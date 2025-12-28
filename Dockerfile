@@ -29,16 +29,16 @@ ENV NO_GETTEXT=1
 
 WORKDIR /opt/cgit-build
 
-# Clone cgit and checkout version
-RUN git clone --depth 1 ${CGIT_GIT_URL} . && \
+# Clone cgit and checkout version - optimize for cross-compilation
+RUN git clone --depth 1 --single-branch ${CGIT_GIT_URL} . && \
     git checkout ${CGIT_VERSION} && \
-    git submodule update --init --recursive
+    git submodule update --depth 1 --init --recursive
 
 # Copy build configuration
 COPY cgit_build.conf /opt/cgit-build/cgit.conf
 
-# Build and install cgit
-RUN make && make install
+# Build and install cgit with parallel jobs
+RUN make -j$(nproc) && make install
 
 ################################################################################
 # Stage 2: Runtime image
