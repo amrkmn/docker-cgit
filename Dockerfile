@@ -113,7 +113,7 @@ RUN ARCH=$(case "$TARGETPLATFORM" in \
     ls -lh /tmp/s6-overlay-*.tar.xz
 
 RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
-    tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.xz && \
+    tar -C / -Jxpf /tmp/s6-overlay-${ARCH}.tar.xz && \
     rm /tmp/s6-overlay-*.tar.xz
 
 # Copy cgit from builder stage
@@ -165,9 +165,6 @@ ENV CGIT_OWNER="Unknown"
 # Add architecture metadata
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
-LABEL org.opencontainers.image.created="$BUILD_DATE"
-LABEL org.opencontainers.image.revision="$SOURCE_COMMIT"
-LABEL org.opencontainers.image.version="$SOURCE_VERSION"
 LABEL org.opencontainers.image.title="cgit Docker Image"
 LABEL org.opencontainers.image.description="Fast web frontend for git repositories with SSH support"
 LABEL target-platform="$TARGETPLATFORM"

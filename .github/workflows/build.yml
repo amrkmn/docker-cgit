@@ -77,9 +77,6 @@ jobs:
           cache-from: type=gha,scope=build-${{ matrix.platform }},type=registry,ref=ghcr.io/${{ github.repository }}:buildcache
           cache-to: type=gha,mode=max,scope=build-${{ matrix.platform }},type=registry,ref=ghcr.io/${{ github.repository }}:buildcache,mode=max
           build-args: |
-            BUILD_DATE=${{ steps.meta.outputs.created }}
-            SOURCE_COMMIT=${{ github.sha }}
-            SOURCE_VERSION=${{ github.ref_name }}
             TARGETPLATFORM=${{ matrix.platform }}
         env:
           BUILDKIT_PROGRESS: plain
