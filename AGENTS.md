@@ -1,107 +1,68 @@
 # AGENTS.md
 
-This file provides guidance for agentic coding agents working with this docker-cgit repository.
+This file provides guidance for agentic coding agents working with the docker-cgit repository.
 
 ## Build & Development Commands
 
 ### Docker Commands
 ```bash
-# Build image locally
-docker compose build
+# Build and start
+docker compose build                          # Build image locally
+docker compose up -d                          # Start container in detached mode
+docker compose logs -f                        # View live logs
 
-# Build specific stage (for debugging)
-docker build --target=builder -t cgit-builder .
+# Development & debugging
+docker compose exec cgit sh                   # Shell into running container
+docker build --target=builder -t cgit-builder .  # Build specific stage for debugging
+docker compose down                           # Stop and remove containers
 
-# Start container
-docker compose up -d
-
-# View logs
-docker compose logs -f
-
-# Stop container
-docker compose down
-
-# Shell into running container
-docker compose exec cgit sh
-
-# Test container health
-docker compose ps
+# Health checks
+docker compose ps                             # Check container status
 docker compose exec cgit wget --spider http://localhost:80/
 ```
 
-### Repository Management (via unified `repo` command)
-```bash
-# Create test repository
-docker compose exec cgit repo create test-repo "Test Repository"
+### Repository Management
+All repository operations use the unified `repo` command (scripts/repo:1).
 
-# Clone/mirror repository
+```bash
+# Core operations
+docker compose exec cgit repo create test-repo "Description" "Owner <email>"
 docker compose exec cgit repo clone https://github.com/user/repo.git
+docker compose exec cgit repo list           # List all repositories with metadata
+docker compose exec cgit repo update test-repo  # Update mirrored repository
 
-# List repositories
-docker compose exec cgit repo list
-
-# Update mirrored repository
-docker compose exec cgit repo update test-repo
-
-# Delete repository (interactive)
-docker compose exec -it cgit repo delete test-repo
-
-# Delete repository (non-interactive)
-docker compose exec cgit repo delete test-repo --yes
-
-# Clear cgit cache
-docker compose exec cgit repo clear-cache
-
-# Show help
-docker compose exec cgit repo help
+# Destructive operations
+docker compose exec cgit repo delete test-repo --yes  # Skip confirmation
+docker compose exec cgit repo clear-cache     # Clear cgit cache after changes
 ```
 
-### Testing Git Operations
+### Testing
+No automated test suite exists. Manual testing workflow:
+
 ```bash
-# Test SSH connection
-ssh -p 2222 -v git@localhost
+# Test Git protocols
+ssh -p 2222 git@localhost                     # Verify SSH access
+git clone ssh://git@localhost:2222/test-repo.git  # Test SSH clone (read-write)
+git clone http://localhost:8081/test-repo.git     # Test HTTP clone (read-only)
+git clone git://localhost:9418/test-repo.git      # Test git:// protocol (read-only)
 
-# Clone via SSH (read-write)
-git clone ssh://git@localhost:2222/test-repo.git
-
-# Clone via HTTP (read-only)
-git clone http://localhost:8081/test-repo.git
-
-# Clone via git protocol (read-only)
-git clone git://localhost:9418/test-repo.git
-
-# Push via SSH
-cd test-repo
-git push origin main
-```
-
-### Service Validation
-```bash
-# Validate s6-rc services
-docker compose exec cgit s6-rc -a list
-
-# Check nginx config
-docker compose exec cgit nginx -t
-
-# Test cgit.cgi manually
-docker compose exec cgit /opt/cgit/app/cgit.cgi
+# Test services
+docker compose exec cgit s6-rc -a list        # Verify all services running
+docker compose exec cgit nginx -t             # Validate nginx config
+docker compose exec cgit /opt/cgit/app/cgit.cgi  # Test cgit.cgi directly
 ```
 
 ## Code Style Guidelines
 
-### Shell Scripts
-- Use `#!/bin/bash` with `set -e` for error handling
-- Quote all variables: `"$VAR"` not `$VAR`
-- Use UPPER_CASE for environment and global variables
-- Use lower_case with underscores for local variables
-- Functions use `function_name()` format without `function` keyword
-- Indent with 4 spaces (no tabs)
-- Add comments for complex logic
-- Use `local` for function-local variables
-- Validate input parameters and provide usage help
-- Consolidate functionality into unified commands (e.g., `repo` script)
+### Shell Scripts (Bash)
+- **Shebang & safety**: `#!/bin/bash` with `set -e` for error handling
+- **Quoting**: Always quote variables: `"$VAR"` not `$VAR`
+- **Variables**: UPPER_CASE for env/global vars, lower_case for local vars
+- **Functions**: Use `function_name()` format (no `function` keyword), declare `local` vars
+- **Indentation**: 4 spaces (no tabs)
+- **Validation**: Validate inputs, provide usage help, exit with non-zero on errors
+- **Consolidation**: Group related functionality (see scripts/repo:320 for unified command pattern)
 
-Example:
 ```bash
 #!/bin/bash
 set -e
@@ -111,109 +72,80 @@ REPO_DIR="${REPO_DIR:-/opt/cgit/data/repositories}"
 
 validate_repo_name() {
     local name="$1"
-    if [[ ! "$name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
-        echo "Error: Invalid repository name"
-        exit 1
-    fi
+    [[ "$name" =~ ^[a-zA-Z0-9_-]+$ ]] || { echo "Error: Invalid name"; exit 1; }
 }
 ```
 
 ### Dockerfile
-- Multi-stage builds with descriptive comments
-- Group related RUN commands with `&&`
-- Use ARG for versions, ENV for runtime
-- Keep layers minimal (combine commands)
-- Use specific image tags (avoid `latest`)
-- Order instructions: system packages → cleanup → user creation → config
+- **Multi-stage builds**: Separate builder and runtime stages (Dockerfile:6, Dockerfile:28)
+- **Layering**: Group RUN commands with `&&`, minimize layers
+- **Versioning**: Use ARG for build versions, ENV for runtime config
+- **Order**: System packages → cleanup → user creation → config files → permissions
 
 ### Docker Compose
-- Use YAML anchors for repeated configurations
-- Environment variables for customization
-- Descriptive service names
-- Proper volume mappings
-- Restart policies defined
-
-### Configuration Files
-- cgitrc: Follow upstream documentation format
-- Use absolute paths in container contexts
-- Include comments for non-obvious settings
-- Separate user-configurable from system settings
+- Use environment variables for configuration (docker-compose.yml:12)
+- Define restart policies (`restart: unless-stopped`)
+- Use descriptive service names and proper volume mappings
+- Keep configurations user-customizable via env vars
 
 ### s6-rc Services
-- Longrun services use `#!/command/execlineb -P`
-- Oneshot services use `#!/command/execlineb -P` for up scripts
-- Define dependencies via `dependencies.d/` directories
-- Service type in `type` file (oneshot, longrun, bundle)
-- Proper permissions on executable files
-- Consolidate related preparation into single oneshot service where possible
+- **Longrun services**: Use `#!/command/execlineb -P` (s6-rc/nginx/run:1)
+- **Dependencies**: Define via `dependencies.d/` directories
+- **Type files**: `longrun`, `oneshot`, or `bundle` in `type` file
+- **Permissions**: Ensure scripts are executable (755)
 
-### Python Scripts
-- Use Python 3 syntax
-- Follow PEP 8 style guide
-- Docstrings for functions and classes
-- Type hints where appropriate
-- Error handling with try/except blocks
+### Python Scripts (Syntax Highlighting Filters)
+- Python 3 syntax, PEP 8 style guide
+- Import order: stdlib → third-party → local
+- Error handling with try/except blocks (config/filters/about-formatting.sh:15)
+- Use markdown library for rendering (with fenced_code, tables, codehilite extensions)
 
-### File Permissions
-- Executable scripts: 755
-- Configuration files: 644
-- Sensitive files (SSH keys): 600
-- Directories: 755 (or 700 for sensitive dirs)
+### Configuration Files
+- **cgitrc**: Follow upstream format, use absolute paths in container contexts
+- **Separate concerns**: System defaults in /opt/cgit/cgitrc, user overrides in /opt/cgit/data/cgitrc
+- **Comments**: Add comments for non-obvious settings
+- **Git metadata**: Use `git config --local cgit.*` for repository metadata (scripts/repo:61)
+  - Standard fields: name, desc, owner, section, defbranch, readme
+  - README files: Use colon prefix (`:README.md`) for in-tree files
 
 ### Naming Conventions
-- Files: kebab-case for scripts, camelCase for configs
-- Directories: kebab-case
-- Variables: UPPER_CASE for env vars, lower_case for locals
-- Functions: snake_case with descriptive names
-- Services: kebab-case in docker-compose
+- **Files**: kebab-case for scripts, camelCase for configs
+- **Directories**: kebab-case
+- **Variables**: UPPER_CASE for env vars, lower_case for locals
+- **Functions**: snake_case with descriptive names
 
-### Error Handling
-- Use `set -e` in shell scripts
-- Validate inputs before processing
-- Provide meaningful error messages
-- Exit with non-zero status on errors
-- Use conditional checks for file operations
-
-### Security Best Practices
-- Never log secrets or passwords
-- Use read-only mounts where possible
-- Minimal user permissions
-- Validate all external inputs
-- Use HTTPS for remote operations
-
-### Git Configuration
-- Repository metadata via `git config --local cgit.*`
-- Standard fields: name, desc, owner, section, defbranch, readme
-- Use colon prefix for README files in cgit.readme
-
-### Testing Strategy
-- Manual testing via docker compose
-- Service health checks
-- Git operation validation
-- Configuration file validation
-- Container startup verification
+### Error Handling & Security
+- **Shell scripts**: Use `set -e`, validate inputs, meaningful error messages
+- **File operations**: Conditional checks before destructive operations
+- **Permissions**: Scripts 755, configs 644, secrets 600, sensitive dirs 700
+- **Security**: Never log secrets, use read-only mounts, minimal user permissions
+- **Input validation**: Validate external inputs (scripts/repo:22 validates repo names)
 
 ## Repository Structure
 
 ```
 docker-cgit/
-├── Dockerfile              # Multi-stage build
-├── docker-compose.yml      # Container orchestration
-├── config/                 # Configuration files
-│   ├── cgitrc             # Default cgit config
-│   ├── filters/           # Syntax highlighting filters
-│   ├── nginx/             # Web server config
-│   └── sshd_config        # SSH server config
-├── scripts/               # Helper scripts (added to PATH)
-│   └── repo               # Unified repository management (contains all functions)
-├── s6-rc/                 # Service definitions
-└── entrypoint.sh          # Auto-configuration wrapper
+├── Dockerfile              # Multi-stage build (builder → runtime)
+├── docker-compose.yml      # Service orchestration & env config
+├── entrypoint.sh           # Auto-generates /opt/cgit/data/cgitrc on first run
+├── config/                 # Default configurations
+│   ├── cgitrc             # System cgit defaults (included by user config)
+│   ├── filters/           # Syntax highlighting & markdown rendering
+│   ├── nginx/             # Web server reverse proxy config
+│   └── sshd_config        # SSH server for git+ssh://
+├── scripts/repo           # Unified repository management CLI (in container PATH)
+└── s6-rc/                 # s6-overlay service definitions
+    ├── prepare-services   # Oneshot: SSH key setup
+    ├── nginx              # Longrun: Web server
+    ├── fcgiwrap           # Longrun: FastCGI wrapper for cgit.cgi
+    ├── sshd               # Longrun: SSH server
+    └── git-daemon         # Longrun: git:// protocol server
 ```
 
 ## CI/CD Pipeline
 
-- Multi-arch builds (amd64/arm64) via GitHub Actions
-- QEMU for cross-platform builds
-- GitHub Container Registry for distribution
-- Automated testing on PRs
-- Semantic versioning for tags
+- **Multi-arch builds**: amd64, arm64 via GitHub Actions (matrix strategy)
+- **Build system**: Docker Buildx with QEMU for cross-platform
+- **Registry**: GitHub Container Registry (ghcr.io)
+- **Caching**: GitHub Actions cache + registry cache
+- **Tagging**: Semantic versioning (v*.*.*, latest on main branch)

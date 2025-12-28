@@ -58,13 +58,13 @@ RUN ARCH=$(case "$TARGETPLATFORM" in \
     rm /tmp/*.tar.xz
 
 COPY --from=builder /opt/cgit /opt/cgit
-COPY entrypoint.sh /entrypoint.sh && \
-    config/cgitrc /opt/cgit/cgitrc && \
-    config/cgit-dark.css /opt/cgit/app/cgit-dark.css && \
-    config/filters/ /opt/cgit/filters/ && \
-    config/sshd_config /etc/ssh/sshd_config && \
-    config/nginx/default.conf /etc/nginx/http.d/default.conf && \
-    scripts/ /opt/cgit/bin/
+COPY entrypoint.sh /entrypoint.sh
+COPY config/cgitrc /opt/cgit/cgitrc
+COPY config/cgit-dark.css /opt/cgit/app/cgit-dark.css
+COPY config/filters/ /opt/cgit/filters/
+COPY config/sshd_config /etc/ssh/sshd_config
+COPY config/nginx/default.conf /etc/nginx/http.d/default.conf
+COPY scripts/ /opt/cgit/bin/
 
 RUN chmod +x /entrypoint.sh /opt/cgit/bin/*
 
