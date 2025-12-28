@@ -101,7 +101,7 @@ RUN ARCH=$(case "$TARGETPLATFORM" in \
 ARG TARGETPLATFORM
 ARG S6_OVERLAY_VERSION
 
-# Cache architecture-specific downloads separately
+# Download and extract s6-overlay in single RUN command to preserve ARCH variable
 RUN ARCH=$(case "$TARGETPLATFORM" in \
         "linux/amd64") echo "x86_64" ;; \
         "linux/arm64") echo "aarch64" ;; \
@@ -110,11 +110,13 @@ RUN ARCH=$(case "$TARGETPLATFORM" in \
     echo "Downloading s6-overlay for ${ARCH}" && \
     curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz" -o /tmp/s6-overlay-noarch.tar.xz && \
     curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCH}.tar.xz" -o /tmp/s6-overlay-${ARCH}.tar.xz && \
-    ls -lh /tmp/s6-overlay-*.tar.xz
-
-RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
+    echo "Files:" && \
+    ls -lh /tmp/s6-overlay-*.tar.xz && \
+    echo "Extracting s6-overlay..." && \
+    tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
     tar -C / -Jxpf /tmp/s6-overlay-${ARCH}.tar.xz && \
-    rm /tmp/s6-overlay-*.tar.xz
+    rm /tmp/s6-overlay-*.tar.xz && \
+    echo "Done"
 
 # Copy cgit from builder stage
 COPY --from=builder /opt/cgit /opt/cgit
