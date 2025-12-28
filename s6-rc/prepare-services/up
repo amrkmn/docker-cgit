@@ -40,4 +40,8 @@ chmod 600 /opt/cgit/data/ssh/authorized_keys
 mkdir -p /opt/cgit/data/repositories
 chown -R git:git /opt/cgit/data/repositories
 chmod 755 /opt/cgit/data/repositories
+
+# Configure git to trust all repositories in the data directory
+# This fixes 'dubious ownership' errors when running git commands
+su - git -c 'git config --global --add safe.directory \"*\"'
 "

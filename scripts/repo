@@ -531,6 +531,31 @@ function mirror_logs() {
 
 function mirror_command() {
     local subcommand="$1"
+    
+    # Show help if no subcommand provided
+    if [ -z "$subcommand" ]; then
+        echo "Mirror auto-sync commands:"
+        echo ""
+        echo "Usage: repo mirror <subcommand> [args...]"
+        echo ""
+        echo "Subcommands:"
+        echo "  enable <repo> [--schedule CRON] [--timeout SECONDS]"
+        echo "                                Enable auto-sync for repository"
+        echo "  disable <repo>                Disable auto-sync"
+        echo "  list [--enabled-only]         List mirrored repositories"
+        echo "  status <repo>                 Show mirror sync status"
+        echo "  sync <repo>                   Manually sync repository now"
+        echo "  sync-all                      Sync all enabled mirrors"
+        echo "  logs [repo]                   View sync logs"
+        echo ""
+        echo "Examples:"
+        echo "  repo mirror enable my-repo"
+        echo "  repo mirror enable my-repo --schedule '0 2 * * *'"
+        echo "  repo mirror sync my-repo"
+        echo "  repo mirror list"
+        return 0
+    fi
+    
     shift
     
     case "$subcommand" in
