@@ -2,6 +2,13 @@
 ARG ALPINE_VERSION=3.22
 ARG S6_OVERLAY_VERSION=3.2.1.0
 
+# Build metadata
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+ARG BUILD_DATE
+ARG SOURCE_COMMIT
+ARG SOURCE_VERSION
+
 ################################################################################
 # Stage 1: Build cgit from source
 ################################################################################
@@ -72,14 +79,38 @@ RUN apk add --no-cache \
 RUN ln -sf python3 /usr/bin/python
 
 # Download and install Chroma syntax highlighter (supports Svelte, Astro, SolidJS, etc.)
-RUN CHROMA_VERSION=2.14.0 && \
-    curl -fsSL "https://github.com/alecthomas/chroma/releases/download/v${CHROMA_VERSION}/chroma-${CHROMA_VERSION}-linux-amd64.tar.gz" | \
-    tar -xz -C /usr/local/bin && \
-    chmod +x /usr/local/bin/chroma
+# Use architecture-specific binary based on TARGETPLATFORM
+ARG TARGETPLATFORM
+ARG CHROMA_VERSION=2.14.0
+
+RUN ARCH=$(case "$TARGETPLATFORM" in \
+        "linux/amd64") echo "amd64" ;; \
+        "linux/arm64") echo "arm64" ;; \
+        *) echo "amd64" ;; \
+    esac) && \
+    echo "Downloading Chroma v${CHROMA_VERSION} for ${ARCH}" && \
+    curl -fsSL "https://github.com/alecthomas/chroma/releases/download/v${CHROMA_VERSION}/chroma-${CHROMA_VERSION}-linux-${ARCH}.tar.gz" -o /tmp/chroma.tar.gz && \
+    ls -lh /tmp/chroma.tar.gz && \
+    tar -xz -C /usr/local/bin -f /tmp/chroma.tar.gz && \
+    chmod +x /usr/local/bin/chroma && \
+    /usr/local/bin/chroma --version && \
+    rm /tmp/chroma.tar.gz
 
 # Download and install s6-overlay
-ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp/
-ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64.tar.xz /tmp/
+# Use architecture-specific binary based on TARGETPLATFORM
+ARG TARGETPLATFORM
+ARG S6_OVERLAY_VERSION
+
+# Cache architecture-specific downloads separately
+RUN ARCH=$(case "$TARGETPLATFORM" in \
+        "linux/amd64") echo "x86_64" ;; \
+        "linux/arm64") echo "aarch64" ;; \
+        *) echo "x86_64" ;; \
+    esac) && \
+    echo "Downloading s6-overlay for ${ARCH}" && \
+    curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz" -o /tmp/s6-overlay-noarch.tar.xz && \
+    curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCH}.tar.xz" -o /tmp/s6-overlay-${ARCH}.tar.xz && \
+    ls -lh /tmp/s6-overlay-*.tar.xz
 
 RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
     tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.xz && \
@@ -130,6 +161,17 @@ ENV PATH="/opt/cgit/bin:${PATH}"
 # Environment variables for clone URLs and default owner
 ENV CGIT_HOST="localhost"
 ENV CGIT_OWNER="Unknown"
+
+# Add architecture metadata
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+LABEL org.opencontainers.image.created="$BUILD_DATE"
+LABEL org.opencontainers.image.revision="$SOURCE_COMMIT"
+LABEL org.opencontainers.image.version="$SOURCE_VERSION"
+LABEL org.opencontainers.image.title="cgit Docker Image"
+LABEL org.opencontainers.image.description="Fast web frontend for git repositories with SSH support"
+LABEL target-platform="$TARGETPLATFORM"
+LABEL build-platform="$BUILDPLATFORM"
 
 # Copy s6-rc service definitions
 COPY s6-rc/ /etc/s6-overlay/s6-rc.d/
