@@ -1,0 +1,2 @@
+#!/command/execlineb -P
+nice -n 19 python3 /opt/cgit/bin/mirror-sync-daemon.py
