@@ -74,6 +74,8 @@ RUN apk add --no-cache \
     py3-pygments \
     # LuaJIT runtime (required by cgit.cgi)
     luajit \
+    # Lua OpenSSL for Libravatar email filter
+    lua-ossl \
     # For downloading Chroma
     curl
 
