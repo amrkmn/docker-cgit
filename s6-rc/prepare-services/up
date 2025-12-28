@@ -19,7 +19,7 @@ mkdir -p /run/fcgiwrap
 chown nginx:nginx /run/fcgiwrap
 
 # Create SSH directory structure
-mkdir -p /opt/cgit/ssh
+mkdir -p /opt/cgit/data/ssh
 
 # Generate SSH host keys if they don't exist
 if [ ! -f /etc/ssh/ssh_host_rsa_key ]; then
@@ -27,17 +27,17 @@ if [ ! -f /etc/ssh/ssh_host_rsa_key ]; then
 fi
 
 # Set SSH permissions
-chown -R git:git /opt/cgit/ssh
-chmod 700 /opt/cgit/ssh
+chown -R git:git /opt/cgit/data/ssh
+chmod 700 /opt/cgit/data/ssh
 
 # Create authorized_keys if it doesn't exist
-if [ ! -f /opt/cgit/ssh/authorized_keys ]; then
-    /bin/touch /opt/cgit/ssh/authorized_keys
+if [ ! -f /opt/cgit/data/ssh/authorized_keys ]; then
+    /bin/touch /opt/cgit/data/ssh/authorized_keys
 fi
-chmod 600 /opt/cgit/ssh/authorized_keys
+chmod 600 /opt/cgit/data/ssh/authorized_keys
 
 # Ensure repository directory exists with correct ownership
-mkdir -p /opt/cgit/repositories
-chown -R git:git /opt/cgit/repositories
-chmod 755 /opt/cgit/repositories
+mkdir -p /opt/cgit/data/repositories
+chown -R git:git /opt/cgit/data/repositories
+chmod 755 /opt/cgit/data/repositories
 "

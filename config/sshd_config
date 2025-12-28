@@ -21,7 +21,7 @@ AllowUsers git
 
 # Git user restrictions
 Match User git
-    AuthorizedKeysFile /opt/cgit/ssh/authorized_keys
+    AuthorizedKeysFile /opt/cgit/data/ssh/authorized_keys
     ForceCommand /opt/cgit/bin/git-shell-wrapper.sh
     X11Forwarding no
     AllowTcpForwarding no
