@@ -34,7 +34,7 @@ noplainemail=1
 # Filters for syntax highlighting and formatting
 source-filter=/opt/cgit/filters/chroma-highlight.sh
 about-filter=/opt/cgit/filters/about-formatting.sh
-email-filter=lua:/opt/cgit/filters/email-libravatar.lua
+email-filter=/opt/cgit/filters/email-libravatar.py
 
 # Cache settings
 cache-size=40
