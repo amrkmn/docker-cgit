@@ -72,6 +72,8 @@ RUN apk add --no-cache \
     python3 \
     py3-markdown \
     py3-pygments \
+    # LuaJIT runtime (required by cgit.cgi)
+    luajit \
     # For downloading Chroma
     curl
 
