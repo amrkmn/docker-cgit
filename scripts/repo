@@ -79,17 +79,52 @@ function create_repo() {
 }
 
 function clone_repo() {
-    local GIT_URL="$1"
-    local REPO_NAME="${2:-}"
-    local REPO_DESC="${3:-Mirrored repository}"
-    local REPO_OWNER="${4:-$CGIT_OWNER}"
+    local GIT_URL=""
+    local REPO_NAME=""
+    local REPO_DESC="Mirrored repository"
+    local REPO_OWNER="$CGIT_OWNER"
+    local ENABLE_MIRROR=false
+    local MIRROR_SCHEDULE="0 */6 * * *"
+    local MIRROR_TIMEOUT=600
+
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --mirror)
+                ENABLE_MIRROR=true
+                shift
+                ;;
+            --schedule)
+                MIRROR_SCHEDULE="$2"
+                shift 2
+                ;;
+            --timeout)
+                MIRROR_TIMEOUT="$2"
+                shift 2
+                ;;
+            *)
+                if [ -z "$GIT_URL" ]; then
+                    GIT_URL="$1"
+                elif [ -z "$REPO_NAME" ]; then
+                    REPO_NAME="$1"
+                elif [ "$REPO_DESC" == "Mirrored repository" ]; then
+                    REPO_DESC="$1"
+                elif [ "$REPO_OWNER" == "$CGIT_OWNER" ]; then
+                    REPO_OWNER="$1"
+                fi
+                shift
+                ;;
+        esac
+    done
 
     if [ -z "$GIT_URL" ]; then
-        echo "Usage: repo clone <git-url> [repo-name] [description] [owner]"
+        echo "Usage: repo clone <git-url> [repo-name] [description] [owner] [--mirror] [--schedule CRON] [--timeout SECONDS]"
         echo ""
         echo "Examples:"
         echo "  repo clone https://github.com/user/repo.git"
         echo "  repo clone https://github.com/user/repo.git repo-name 'Custom Description' 'Owner Name <email>'"
+        echo "  repo clone https://github.com/user/repo.git --mirror"
+        echo "  repo clone https://github.com/user/repo.git --mirror --schedule '0 2 * * *' --timeout 900"
         exit 1
     fi
 
@@ -140,9 +175,17 @@ function clone_repo() {
     echo "  ssh://git@$CGIT_HOST:$CGIT_PORT/$REPO_NAME.git"
     echo "Owner:           $REPO_OWNER"
     echo ""
-    echo "To update this mirror:"
-    echo "  repo update ${REPO_NAME}"
-    echo ""
+    
+    # Enable auto-sync if --mirror flag was provided
+    if [ "$ENABLE_MIRROR" = true ]; then
+        echo "Enabling mirror auto-sync..."
+        python3 /opt/cgit/bin/mirror-manager.py enable "$REPO_NAME" --schedule "$MIRROR_SCHEDULE" --timeout "$MIRROR_TIMEOUT"
+        echo ""
+    else
+        echo "To update this mirror:"
+        echo "  repo update ${REPO_NAME}"
+        echo ""
+    fi
 }
 
 function update_repo() {
@@ -294,6 +337,240 @@ function list_repos() {
     done
 }
 
+function mirror_enable() {
+    local REPO_NAME="$1"
+    local SCHEDULE="0 */6 * * *"
+    local TIMEOUT=600
+    
+    shift
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --schedule)
+                SCHEDULE="$2"
+                shift 2
+                ;;
+            --timeout)
+                TIMEOUT="$2"
+                shift 2
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+    
+    if [ -z "$REPO_NAME" ]; then
+        echo "Usage: repo mirror enable <repo-name> [--schedule CRON] [--timeout SECONDS]"
+        echo ""
+        echo "Examples:"
+        echo "  repo mirror enable my-repo"
+        echo "  repo mirror enable my-repo --schedule '0 2 * * *'"
+        echo "  repo mirror enable my-repo --schedule '0 */12 * * *' --timeout 900"
+        exit 1
+    fi
+    
+    validate_repo_name "$REPO_NAME"
+    REPO_NAME="${REPO_NAME%.git}"
+    
+    # Check if repo exists
+    local REPO_PATH="${REPO_DIR}/${REPO_NAME}.git"
+    if [ ! -d "$REPO_PATH" ]; then
+        echo "Error: Repository does not exist at $REPO_PATH"
+        exit 1
+    fi
+    
+    python3 /opt/cgit/bin/mirror-manager.py enable "$REPO_NAME" --schedule "$SCHEDULE" --timeout "$TIMEOUT"
+}
+
+function mirror_disable() {
+    local REPO_NAME="$1"
+    
+    if [ -z "$REPO_NAME" ]; then
+        echo "Usage: repo mirror disable <repo-name>"
+        echo ""
+        echo "Example:"
+        echo "  repo mirror disable my-repo"
+        exit 1
+    fi
+    
+    validate_repo_name "$REPO_NAME"
+    REPO_NAME="${REPO_NAME%.git}"
+    
+    python3 /opt/cgit/bin/mirror-manager.py disable "$REPO_NAME"
+}
+
+function mirror_list() {
+    python3 /opt/cgit/bin/mirror-manager.py list "$@"
+}
+
+function mirror_status() {
+    local REPO_NAME="$1"
+    
+    if [ -z "$REPO_NAME" ]; then
+        echo "Usage: repo mirror status <repo-name>"
+        echo ""
+        echo "Example:"
+        echo "  repo mirror status my-repo"
+        exit 1
+    fi
+    
+    validate_repo_name "$REPO_NAME"
+    REPO_NAME="${REPO_NAME%.git}"
+    
+    python3 /opt/cgit/bin/mirror-manager.py get "$REPO_NAME"
+}
+
+function mirror_sync() {
+    local REPO_NAME="$1"
+    
+    if [ -z "$REPO_NAME" ]; then
+        echo "Usage: repo mirror sync <repo-name>"
+        echo ""
+        echo "Example:"
+        echo "  repo mirror sync my-repo"
+        exit 1
+    fi
+    
+    validate_repo_name "$REPO_NAME"
+    REPO_NAME="${REPO_NAME%.git}"
+    local REPO_PATH="${REPO_DIR}/${REPO_NAME}.git"
+    
+    if [ ! -d "$REPO_PATH" ]; then
+        echo "Error: Repository does not exist at $REPO_PATH"
+        exit 1
+    fi
+    
+    echo "Syncing repository: $REPO_NAME"
+    
+    # Get timeout from config
+    local TIMEOUT=$(python3 /opt/cgit/bin/mirror-manager.py get "$REPO_NAME" 2>/dev/null | grep -o '"timeout": [0-9]*' | grep -o '[0-9]*')
+    TIMEOUT=${TIMEOUT:-600}
+    
+    local START_TIME=$(date +%s)
+    
+    if timeout "$TIMEOUT" su - git -c "cd '$REPO_PATH' && git remote update --prune" 2>&1; then
+        local END_TIME=$(date +%s)
+        local DURATION=$((END_TIME - START_TIME))
+        echo ""
+        echo "✓ Repository synced successfully! (${DURATION}s)"
+        python3 /opt/cgit/bin/mirror-manager.py update-status "$REPO_NAME" success --duration "$DURATION"
+    else
+        local EXIT_CODE=$?
+        local END_TIME=$(date +%s)
+        local DURATION=$((END_TIME - START_TIME))
+        
+        if [ $EXIT_CODE -eq 124 ]; then
+            echo ""
+            echo "✗ Sync timeout after ${TIMEOUT}s"
+            python3 /opt/cgit/bin/mirror-manager.py update-status "$REPO_NAME" timeout --error "Timeout after ${TIMEOUT}s"
+        else
+            echo ""
+            echo "✗ Sync failed with exit code $EXIT_CODE"
+            python3 /opt/cgit/bin/mirror-manager.py update-status "$REPO_NAME" failed --error "Exit code $EXIT_CODE"
+        fi
+        exit 1
+    fi
+    
+    clear_cache
+}
+
+function mirror_sync_all() {
+    echo "Syncing all enabled mirrors..."
+    
+    # Get list of enabled mirrors
+    local MIRRORS=$(python3 /opt/cgit/bin/mirror-manager.py list --enabled-only 2>/dev/null | grep -oP '^\s+\K[^:]+(?=:)')
+    
+    if [ -z "$MIRRORS" ]; then
+        echo "No enabled mirrors found"
+        return 0
+    fi
+    
+    local TOTAL=0
+    local SUCCESS=0
+    local FAILED=0
+    
+    for REPO in $MIRRORS; do
+        TOTAL=$((TOTAL + 1))
+        echo ""
+        echo "[$TOTAL] Syncing $REPO..."
+        
+        if mirror_sync "$REPO" 2>&1; then
+            SUCCESS=$((SUCCESS + 1))
+        else
+            FAILED=$((FAILED + 1))
+        fi
+    done
+    
+    echo ""
+    echo "======================================"
+    echo "Sync completed: $TOTAL total, $SUCCESS success, $FAILED failed"
+    echo "======================================"
+}
+
+function mirror_logs() {
+    local REPO_NAME="$1"
+    local LOG_FILE="/opt/cgit/data/logs/mirror-sync.log"
+    
+    if [ ! -f "$LOG_FILE" ]; then
+        echo "No mirror sync logs found"
+        return 0
+    fi
+    
+    if [ -n "$REPO_NAME" ]; then
+        validate_repo_name "$REPO_NAME"
+        REPO_NAME="${REPO_NAME%.git}"
+        echo "Mirror sync logs for: $REPO_NAME"
+        echo "======================================"
+        grep "$REPO_NAME" "$LOG_FILE" 2>/dev/null || echo "No logs found for $REPO_NAME"
+    else
+        echo "Recent mirror sync logs:"
+        echo "======================================"
+        tail -n 50 "$LOG_FILE"
+    fi
+}
+
+function mirror_command() {
+    local subcommand="$1"
+    shift
+    
+    case "$subcommand" in
+        enable)
+            mirror_enable "$@"
+            ;;
+        disable)
+            mirror_disable "$@"
+            ;;
+        list)
+            mirror_list "$@"
+            ;;
+        status)
+            mirror_status "$@"
+            ;;
+        sync)
+            mirror_sync "$@"
+            ;;
+        sync-all)
+            mirror_sync_all "$@"
+            ;;
+        logs)
+            mirror_logs "$@"
+            ;;
+        *)
+            echo "Error: Unknown mirror subcommand '$subcommand'"
+            echo ""
+            echo "Available mirror subcommands:"
+            echo "  enable <repo> [--schedule CRON] [--timeout SECONDS]"
+            echo "  disable <repo>"
+            echo "  list [--enabled-only]"
+            echo "  status <repo>"
+            echo "  sync <repo>"
+            echo "  sync-all"
+            echo "  logs [repo]"
+            exit 1
+            ;;
+    esac
+}
+
 function show_help() {
     echo "cgit Repository Management"
     echo ""
@@ -301,18 +578,33 @@ function show_help() {
     echo ""
     echo "Commands:"
     echo "  create <name> [description] [owner]       Create a new bare repository"
-    echo "  clone <url> [name] [description] [owner] Clone/mirror a repository"
-    echo "  update <name>                             Update a mirrored repository"
-    echo "  delete <name> [--yes]                     Delete a repository"
-    echo "  list                                      List all repositories"
-    echo "  clear-cache                               Clear cgit cache"
+    echo "  clone <url> [name] [description] [owner] [--mirror] [--schedule CRON] [--timeout SECONDS]"
+    echo "                                             Clone/mirror a repository"
+    echo "  update <name>                              Update a mirrored repository"
+    echo "  delete <name> [--yes]                      Delete a repository"
+    echo "  list                                       List all repositories"
+    echo "  clear-cache                                Clear cgit cache"
+    echo ""
+    echo "Mirror auto-sync commands:"
+    echo "  mirror enable <name> [--schedule CRON] [--timeout SECONDS]"
+    echo "                                             Enable auto-sync for repository"
+    echo "  mirror disable <name>                      Disable auto-sync"
+    echo "  mirror list [--enabled-only]               List mirrored repositories"
+    echo "  mirror status <name>                       Show mirror sync status"
+    echo "  mirror sync <name>                         Manually sync repository now"
+    echo "  mirror sync-all                            Sync all enabled mirrors"
+    echo "  mirror logs [name]                         View sync logs"
     echo ""
     echo "Examples:"
     echo "  repo create my-project"
     echo "  repo clone https://github.com/user/repo.git"
+    echo "  repo clone https://github.com/user/repo.git --mirror"
+    echo "  repo clone https://github.com/user/repo.git --mirror --schedule '0 2 * * *'"
+    echo "  repo mirror enable my-project"
+    echo "  repo mirror sync my-project"
     echo "  repo update my-project"
     echo "  repo delete my-project"
-    echo "  repo delete my-project --yes              Skip confirmation prompt"
+    echo "  repo delete my-project --yes"
     echo "  repo list"
     echo ""
 }
@@ -344,6 +636,9 @@ function main() {
             ;;
         clear-cache)
             clear_cache
+            ;;
+        mirror)
+            mirror_command "$@"
             ;;
         help|--help|-h)
             show_help
