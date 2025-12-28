@@ -1,0 +1,43 @@
+#!/command/execlineb -P
+# Consolidated service preparation script
+# Adjust user IDs, create directories, and generate SSH keys
+
+with-contenv
+/bin/sh -c "
+# Adjust user and group IDs based on environment variables
+if [ -n \"\${PUID}\" ]; then
+    if [ -n \"\${PGID}\" ]; then
+        /usr/sbin/groupmod -g \"\${PGID}\" git
+        /usr/sbin/usermod -u \"\${PUID}\" git
+    else
+        /usr/sbin/usermod -u \"\${PUID}\" git
+    fi
+fi
+
+# Create fcgiwrap socket directory
+mkdir -p /run/fcgiwrap
+chown nginx:nginx /run/fcgiwrap
+
+# Create SSH directory structure
+mkdir -p /opt/cgit/ssh
+
+# Generate SSH host keys if they don't exist
+if [ ! -f /etc/ssh/ssh_host_rsa_key ]; then
+    /usr/bin/ssh-keygen -A
+fi
+
+# Set SSH permissions
+chown -R git:git /opt/cgit/ssh
+chmod 700 /opt/cgit/ssh
+
+# Create authorized_keys if it doesn't exist
+if [ ! -f /opt/cgit/ssh/authorized_keys ]; then
+    /bin/touch /opt/cgit/ssh/authorized_keys
+fi
+chmod 600 /opt/cgit/ssh/authorized_keys
+
+# Ensure repository directory exists with correct ownership
+mkdir -p /opt/cgit/repositories
+chown -R git:git /opt/cgit/repositories
+chmod 755 /opt/cgit/repositories
+"

@@ -34,21 +34,18 @@ noplainemail=1
 # Filters for syntax highlighting and formatting
 source-filter=/opt/cgit/filters/chroma-highlight.sh
 about-filter=/opt/cgit/filters/about-formatting.sh
-commit-filter=/opt/cgit/filters/commit-links.sh
-email-filter=/opt/cgit/filters/email-gravatar.py
 
 # Cache settings
- cache-size=40
- cache-root=/opt/cgit/data/cache
- cache-dynamic-ttl=10
- cache-repo-ttl=10
- cache-root-ttl=10
- cache-scanrc-ttl=0
- cache-static-ttl=10
+cache-size=40
+cache-root=/opt/cgit/data/cache
+cache-dynamic-ttl=10
+cache-repo-ttl=10
+cache-root-ttl=10
+cache-scanrc-ttl=0
+cache-static-ttl=10
 
 # Repository settings
 remove-suffix=1
-enable-git-config=1
 
 # Snapshot formats (tar.gz, tar.bz2, tar.xz, zip)
 snapshots=tar.gz tar.bz2 tar.xz zip
@@ -57,10 +54,6 @@ snapshots=tar.gz tar.bz2 tar.xz zip
 readme=:README.md
 readme=:README.rst
 readme=:README.txt
-readme=:README.html
-readme=:readme.md
-readme=:readme.rst
-readme=:readme.txt
 
 # Scan for repositories in this directory
 scan-path=/opt/cgit/data/repositories/

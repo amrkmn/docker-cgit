@@ -1,6 +1,0 @@
-#!/command/execlineb -P
-# Create socket directory
-if { mkdir -p /run/fcgiwrap }
-
-# Set nginx user
-if { chown nginx:nginx /run/fcgiwrap }

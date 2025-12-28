@@ -63,22 +63,13 @@ RUN apk add --no-cache \
     shadow \
     # Python for README rendering
     python3 \
-    py3-pip \
     py3-markdown \
     py3-pygments \
-    # Lua support
-    luajit \
-    lua5.1-http \
-    # Utilities
-    mailcap \
-    groff \
-    xz \
     # For downloading Chroma
     curl
 
-# Install rst2html via pip
-RUN python3 -m pip install --no-cache-dir --break-system-packages docutils && \
-    ln -sf python3 /usr/bin/python
+# Use system rst2html instead of pip
+RUN ln -sf python3 /usr/bin/python
 
 # Download and install Chroma syntax highlighter (supports Svelte, Astro, SolidJS, etc.)
 RUN CHROMA_VERSION=2.14.0 && \

@@ -5,9 +5,6 @@
 DATA_CGITRC="/opt/cgit/data/cgitrc"
 
 # Create user config from defaults if it doesn't exist
-DATA_CGITRC="/opt/cgit/data/cgitrc"
-
-# Create user config from defaults if it doesn't exist
 if [ ! -f "$DATA_CGITRC" ]; then
     echo "[cgit-init] Creating user config at $DATA_CGITRC..."
     mkdir -p /opt/cgit/data
