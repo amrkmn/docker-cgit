@@ -44,21 +44,19 @@ fi
 
 echo "Updating repository: $REPO_NAME"
 
-cd "$REPO_PATH"
-
 # Check if repository has a remote configured
-if ! git remote | grep -q .; then
+if ! su - git -c "cd '$REPO_PATH' && git remote | grep -q ."; then
     echo "Error: No remote configured for this repository"
     exit 1
 fi
 
 # Get the remote name (usually 'origin')
-REMOTE_NAME=$(git remote | head -n 1)
-REMOTE_URL=$(git remote get-url "$REMOTE_NAME")
+REMOTE_NAME=$(su - git -c "cd '$REPO_PATH' && git remote | head -n 1")
+REMOTE_URL=$(su - git -c "cd '$REPO_PATH' && git remote get-url '$REMOTE_NAME'")
 
 echo ""
 echo "Fetching updates from $REMOTE_NAME ($REMOTE_URL)..."
-git remote update "$REMOTE_NAME" --prune
+su - git -c "cd '$REPO_PATH' && git remote update '$REMOTE_NAME' --prune"
 
 echo ""
 echo "Repository updated successfully!"
