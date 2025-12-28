@@ -47,7 +47,7 @@ Common settings:
 - `css=/cgit-dark.css` - Dark theme (default)
 - `snapshots=tar.gz tar.bz2 tar.xz zip` - Download formats
 - `readme=:README.md` - README files to display
-- `scan-path=/opt/cgit/repositories/` - Repository scan path
+- `scan-path=/opt/cgit/data/repositories/` - Repository scan path
 
 ### 3. Start Container
 
