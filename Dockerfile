@@ -9,6 +9,8 @@ FROM alpine:${ALPINE_VERSION} AS builder
 ARG CGIT_GIT_URL=https://git.zx2c4.com/cgit
 ARG CGIT_VERSION=master
 
+WORKDIR /opt/cgit-build
+
 RUN apk add --no-cache \
     git make gcc musl-dev openssl-dev zlib-dev \
     luajit-dev gettext-dev gettext && \
@@ -19,8 +21,6 @@ RUN apk add --no-cache \
 COPY cgit_build.conf /opt/cgit-build/cgit.conf
 
 ENV NO_REGEX=NeedsStartEnd NO_GETTEXT=1
-
-WORKDIR /opt/cgit-build
 RUN make -j$(nproc) && make install
 
 ################################################################################
@@ -42,7 +42,7 @@ RUN ARCH=$(case "$TARGETPLATFORM" in \
         *) echo "amd64" ;; \
     esac) && \
     curl -fsSL "https://github.com/alecthomas/chroma/releases/download/v${CHROMA_VERSION}/chroma-${CHROMA_VERSION}-linux-${ARCH}.tar.gz" -o /tmp/chroma.tar.gz && \
-    tar -xz -C /usr/local/bin /tmp/chroma.tar.gz && \
+    tar -xzf /tmp/chroma.tar.gz -C /usr/local/bin chroma && \
     chmod +x /usr/local/bin/chroma && \
     rm /tmp/chroma.tar.gz
 
