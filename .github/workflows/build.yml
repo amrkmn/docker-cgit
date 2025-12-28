@@ -75,17 +75,19 @@ jobs:
           cache-to: type=gha,mode=max,scope=build-${{ matrix.platform }}
 
       - name: Export digest
+        id: export_digest
         if: github.event_name != 'pull_request'
         run: |
           mkdir -p /tmp/digests
           digest="${{ steps.build.outputs.digest }}"
           touch "/tmp/digests/${digest#sha256:}"
+          echo "artifact_name=digest-$(echo '${{ matrix.platform }}' | tr '/' '-')" >> $GITHUB_OUTPUT
 
       - name: Upload digest
         if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: digest-${{ matrix.platform }}
+          name: ${{ steps.export_digest.outputs.artifact_name }}
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
