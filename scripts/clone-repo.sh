@@ -32,7 +32,7 @@ if [ -z "$GIT_URL" ]; then
     echo "  $0 https://github.com/user/repo.git repo-name 'Custom Description' 'Owner Name <email>'"
     echo ""
     echo "Supported protocols: https://, git://, ssh://"
-    echo "Note: Repositories are created in /opt/cgit/repositories by default"
+    echo "Note: Repositories are created in /opt/cgit/data/repositories by default"
     exit 1
 fi
 
@@ -81,8 +81,10 @@ git config --local cgit.defbranch "$DEFAULT_BRANCH"
 # Enable README rendering if present (note: colon prefix required for cgit)
 git config --local cgit.readme ":README.md"
 
-# Add clone URL metadata
-git config --local cgit.clone-url "$GIT_URL"
+# Add clone URL metadata (use local server URLs instead of source)
+# Generate multiple clone URLs: git://, https://, and ssh://
+CLONE_URLS="git://${CGIT_HOST}/${REPO_NAME}.git https://${CGIT_HOST}/${REPO_NAME}.git ssh://git@${CGIT_HOST}:${CGIT_PORT}/${REPO_NAME}.git"
+git config --local cgit.clone-url "$CLONE_URLS"
 
 # Clear cache so repository appears immediately
 clear_cache
@@ -95,12 +97,16 @@ echo "Display name:    $REPO_NAME"
 echo "Description:     $REPO_DESC"
 echo "Default branch:  $DEFAULT_BRANCH"
 echo "Source URL:      $GIT_URL"
+echo "Clone URLs:"
+echo "  git://$CGIT_HOST/$REPO_NAME.git"
+echo "  https://$CGIT_HOST/$REPO_NAME.git"
+echo "  ssh://git@$CGIT_HOST:$CGIT_PORT/$REPO_NAME.git"
 if [ -n "$REPO_OWNER" ]; then
     echo "Owner:           $REPO_OWNER"
 fi
 echo ""
 echo "To update this mirror:"
-echo "  docker compose exec cgit sh -c 'cd /opt/cgit/repositories/${REPO_NAME}.git && git remote update'"
+echo "  docker compose exec cgit sh -c 'cd /opt/cgit/data/repositories/${REPO_NAME}.git && git remote update'"
 echo ""
 echo "Or use this repository:"
 echo "  git clone ssh://git@${CGIT_HOST}:${CGIT_PORT}/${REPO_NAME}.git"
