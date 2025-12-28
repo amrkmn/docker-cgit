@@ -44,4 +44,9 @@ chmod 755 /opt/cgit/data/repositories
 # Configure git to trust all repositories in the data directory
 # This fixes 'dubious ownership' errors when running git commands
 su - git -c 'git config --global --add safe.directory \"*\"'
+
+# Create logs directory for mirror-sync daemon
+mkdir -p /opt/cgit/data/logs
+chown -R git:git /opt/cgit/data/logs
+chmod 755 /opt/cgit/data/logs
 "
