@@ -106,7 +106,7 @@ if [ -n "$REPO_OWNER" ]; then
 fi
 echo ""
 echo "To update this mirror:"
-echo "  docker compose exec cgit sh -c 'cd /opt/cgit/data/repositories/${REPO_NAME}.git && git remote update'"
+echo "  repo update ${REPO_NAME}"
 echo ""
 echo "Or use this repository:"
 echo "  git clone ssh://git@${CGIT_HOST}:${CGIT_PORT}/${REPO_NAME}.git"
