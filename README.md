@@ -289,14 +289,16 @@ docker compose restart
 - `PGID` - Group ID for git user (default: 1000)
 - `CGIT_HOST` - Hostname for clone URLs (default: localhost)
 - `CGIT_PORT` - SSH port for clone URLs (default: 2222)
-- `CGIT_OWNER` - Default owner name for new repositories (default: Unknown User <unknown@example.com>)
+- `CGIT_USER_NAME` - Default owner name for new repositories (default: Unknown User)
+- `CGIT_USER_EMAIL` - Default owner email for new repositories (default: unknown@example.com)
 
 Example:
 ```yaml
 environment:
   - CGIT_HOST=git.example.com
   - CGIT_PORT=22
-  - CGIT_OWNER="John Doe <john@example.com>"
+  - CGIT_USER_NAME="John Doe"
+  - CGIT_USER_EMAIL="john@example.com"
 ```
 
 ## Ports

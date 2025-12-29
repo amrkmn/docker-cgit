@@ -14,5 +14,6 @@ services:
       - PGID=1000
       - CGIT_HOST=localhost
       - CGIT_PORT=2222
-      - CGIT_OWNER=Your Name <email@example.com>
+      - CGIT_USER_NAME=Your Name
+      - CGIT_USER_EMAIL=email@example.com
     restart: unless-stopped

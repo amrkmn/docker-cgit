@@ -10,7 +10,9 @@ REPO_DIR="${REPO_DIR:-/opt/cgit/data/repositories}"
 CACHE_DIR="${CACHE_DIR:-/opt/cgit/data/cache}"
 CGIT_HOST="${CGIT_HOST:-localhost}"
 CGIT_PORT="${CGIT_PORT:-2222}"
-CGIT_OWNER="${CGIT_OWNER:-$(git config user.name 2>/dev/null || echo 'Unknown User')} <$(git config user.email 2>/dev/null || echo 'unknown@example.com')>"
+CGIT_USER_NAME="${CGIT_USER_NAME:-$(git config user.name 2>/dev/null || echo 'Unknown User')}"
+CGIT_USER_EMAIL="${CGIT_USER_EMAIL:-$(git config user.email 2>/dev/null || echo 'unknown@example.com')}"
+CGIT_OWNER="${CGIT_OWNER:-$CGIT_USER_NAME <$CGIT_USER_EMAIL>}"
 
 # Determine script directory for library sourcing
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

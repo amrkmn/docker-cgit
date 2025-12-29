@@ -126,7 +126,17 @@ function clone_repo() {
     echo "Configuring cgit metadata..."
     git config --local cgit.name "$REPO_NAME"
     git config --local cgit.desc "$REPO_DESC"
-    git config --local cgit.owner "$REPO_OWNER"
+    
+    if [ "$REPO_OWNER" == "$CGIT_OWNER" ]; then
+        local FIRST_COMMIT=$(git log --reverse --format='%an <%ae>' 2>/dev/null | head -n 1)
+        if [ -n "$FIRST_COMMIT" ]; then
+            git config --local cgit.owner "$FIRST_COMMIT"
+        else
+            git config --local cgit.owner "$REPO_OWNER"
+        fi
+    else
+        git config --local cgit.owner "$REPO_OWNER"
+    fi
 
     local DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
     git config --local cgit.defbranch "$DEFAULT_BRANCH"

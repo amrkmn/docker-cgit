@@ -187,7 +187,7 @@ Triggered on: push to main/develop, tags (v*.*.*), pull requests, manual dispatc
   - `./data/cache/` → `/opt/cgit/data/cache/` - cgit cache
   - `./data/ssh/authorized_keys` → `/opt/cgit/data/ssh/authorized_keys` - SSH public keys
   - `./data/cgitrc` → `/opt/cgit/data/cgitrc` - User configuration (auto-created on first run)
-- Environment: PUID=1000, PGID=1000 (permission management), CGIT_HOST, CGIT_PORT, CGIT_OWNER
+- Environment: PUID=1000, PGID=1000 (permission management), CGIT_HOST, CGIT_PORT, CGIT_USER_NAME, CGIT_USER_EMAIL
 - Ports: 8081:80 (web), 2222:22 (SSH), 9418:9418 (git protocol)
 - Restart policy: unless-stopped
 

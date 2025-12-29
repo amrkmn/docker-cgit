@@ -164,7 +164,8 @@ ENV PATH="/opt/cgit/bin:${PATH}"
 
 # Environment variables for clone URLs and default owner
 ENV CGIT_HOST="localhost"
-ENV CGIT_OWNER="Unknown"
+ENV CGIT_USER_NAME="Unknown"
+ENV CGIT_USER_EMAIL="unknown@example.com"
 
 # Add architecture metadata
 ARG TARGETPLATFORM
