@@ -303,12 +303,12 @@ function list_repos() {
 
     for REPO_PATH in $REPOS; do
         local REPO_NAME=$(basename "$REPO_PATH" .git)
-        local NAME=$(git -C "$REPO_PATH" config --local cgit.name 2>/dev/null || echo "$REPO_NAME")
-        local DESC=$(git -C "$REPO_PATH" config --local cgit.desc 2>/dev/null || echo "No description")
-        local OWNER=$(git -C "$REPO_PATH" config --local cgit.owner 2>/dev/null || echo "Unknown")
-        local DEFAULT_BRANCH=$(git -C "$REPO_PATH" config --local cgit.defbranch 2>/dev/null || echo "main")
-        local LAST_COMMIT=$(git -C "$REPO_PATH" log -1 --format=%cd --date=short 2>/dev/null || echo "Never")
-        local BRANCHES=$(git -C "$REPO_PATH" branch -a 2>/dev/null | wc -l)
+        local NAME=$(git --git-dir="$REPO_PATH" config cgit.name 2>/dev/null || echo "$REPO_NAME")
+        local DESC=$(git --git-dir="$REPO_PATH" config cgit.desc 2>/dev/null || echo "No description")
+        local OWNER=$(git --git-dir="$REPO_PATH" config cgit.owner 2>/dev/null || echo "Unknown")
+        local DEFAULT_BRANCH=$(git --git-dir="$REPO_PATH" config cgit.defbranch 2>/dev/null || echo "main")
+        local LAST_COMMIT=$(git --git-dir="$REPO_PATH" log -1 --format=%cd --date=short 2>/dev/null || echo "Never")
+        local BRANCHES=$(git --git-dir="$REPO_PATH" branch -a 2>/dev/null | wc -l)
 
         echo "Name:            $NAME"
         echo "Path:            $REPO_PATH"
