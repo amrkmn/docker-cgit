@@ -138,7 +138,12 @@ function clone_repo() {
         git config --local cgit.owner "$REPO_OWNER"
     fi
 
-    local DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
+    local DEFAULT_BRANCH=$(git symbolic-ref HEAD 2>/dev/null | sed 's@^refs/heads/@@')
+    if [ -z "$DEFAULT_BRANCH" ]; then
+        DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+    fi
+    [ -z "$DEFAULT_BRANCH" ] && DEFAULT_BRANCH="main"
+    
     git config --local cgit.defbranch "$DEFAULT_BRANCH"
     git config --local cgit.readme ":README.md"
 
@@ -306,7 +311,13 @@ function list_repos() {
         local NAME=$(git --git-dir="$REPO_PATH" config cgit.name 2>/dev/null || echo "$REPO_NAME")
         local DESC=$(git --git-dir="$REPO_PATH" config cgit.desc 2>/dev/null || echo "No description")
         local OWNER=$(git --git-dir="$REPO_PATH" config cgit.owner 2>/dev/null || echo "Unknown")
-        local DEFAULT_BRANCH=$(git --git-dir="$REPO_PATH" config cgit.defbranch 2>/dev/null || echo "main")
+        
+        local DEFAULT_BRANCH=$(git --git-dir="$REPO_PATH" config cgit.defbranch 2>/dev/null)
+        if [ -z "$DEFAULT_BRANCH" ]; then
+            DEFAULT_BRANCH=$(git --git-dir="$REPO_PATH" symbolic-ref HEAD 2>/dev/null | sed 's@^refs/heads/@@')
+        fi
+        [ -z "$DEFAULT_BRANCH" ] && DEFAULT_BRANCH="main"
+
         local LAST_COMMIT=$(git --git-dir="$REPO_PATH" log -1 --format=%cd --date=short 2>/dev/null || echo "Never")
         local BRANCHES=$(git --git-dir="$REPO_PATH" branch -a 2>/dev/null | wc -l)
 
